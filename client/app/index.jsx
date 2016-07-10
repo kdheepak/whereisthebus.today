@@ -11,12 +11,17 @@ var coords = {
 const App = React.createClass({
 
     componentDidMount: function() {
-    navigator.geolocation.getCurrentPosition(function(position) {
-        this.setState({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-        });
-        }.bind(this));
+        try {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                this.setState({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                });
+                }.bind(this));
+        }
+        catch(err) {
+            console.log(err.message);
+        }
     },
 
   getInitialState: function() {
