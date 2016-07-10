@@ -47,8 +47,8 @@ const App = React.createClass({
   render() {
     return (
       <Gmaps
-        width={'800px'}
-        height={'600px'}
+        width={'100%'}
+        height={'100%'}
         lat={this.state.lat}
         lng={this.state.lng}
         zoom={14}

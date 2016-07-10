@@ -1,9 +1,44 @@
 
 {% extends "layout.html" %}
+
+{% block css %}
+
+<style media="screen" type="text/css">
+
+#app {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display: block;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    padding-top: 50px;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+
+#main {
+    min-height: 100%;
+    height: 100%;
+}
+
+</style>
+
+
+{% endblock %}
+
+{% block content_class %}container fill{% endblock %}
 {% block content %}
 
-    <div id="app" /></div>
-
+    <div id="app"/></div>
     <script src="{{ url_for('static', filename='js/bundle.js') }}" type="text/javascript"></script>
 
 {% endblock %}
