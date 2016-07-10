@@ -5,6 +5,11 @@ import os
 from glob import glob
 from subprocess import call
 
+import warnings
+from flask.exthook import ExtDeprecationWarning
+
+warnings.simplefilter('ignore', ExtDeprecationWarning)
+
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls

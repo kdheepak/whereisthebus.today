@@ -55,10 +55,36 @@ const App = React.createClass({
   },
 
   requestRoute(val) {
-    console.log(val)
     this.setState({
         selectedRoute: val.value
     })
+
+
+    fetch('/api/route',  {
+           method: 'POST',
+           body: JSON.stringify({
+                   route: val.value,
+           })
+          })
+              .then(function(response) {
+                console.log(response.headers.get('Content-Type'))
+                console.log(response.headers.get('Date'))
+                console.log(response.status)
+                console.log(response.statusText)
+                if (response.status == 200){
+                            return response.json();
+                          }
+                else {
+                  return response.text()
+                }
+              }.bind(this))
+              .then(function(json) {
+                    console.log(json)
+              }.bind(this)).catch(function(ex) {
+                  console.log('parsing failed', ex);
+              })
+
+
   },
 
   render() {
