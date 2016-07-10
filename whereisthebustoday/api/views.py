@@ -5,16 +5,21 @@ from flask_login import login_required, login_user, logout_user
 
 import json
 
+from .transit import get_bus_list
+
 blueprint = Blueprint('api', __name__, url_prefix='/api', static_folder='../static')
 
 
 @blueprint.route('/routes', methods=['GET', 'POST'])
 def transit_routes():
-    json_data = [
-      { 'value': 'one', 'label': 'One' },
-      { 'value': 'two', 'label': 'Two' },
-      { 'value': 'two', 'label': 'Two' },
-    ]
+
+    options = sorted(get_bus_list())
+
+    json_data = []
+
+    for item in options:
+
+        json_data.append({'value': item, 'label': item})
 
     return json.dumps(json_data)
 
