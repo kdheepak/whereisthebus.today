@@ -2,7 +2,7 @@ import React from 'react';
 import GoogleMap from 'google-map-react';
 
 const DEFAULT_REF = 'map';
-const DEFAULT_HEIGHT = '400px';
+const DEFAULT_HEIGHT = '100%';
 
 var MyGoogleMap = React.createClass({
 
