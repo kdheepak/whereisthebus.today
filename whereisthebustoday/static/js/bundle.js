@@ -27849,7 +27849,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -36365,6 +36365,26 @@
 	    displayName: 'MyDropdownList',
 	
 	
+	    componentDidMount: function componentDidMount() {
+	
+	        fetch('/api/routes').then(function (response) {
+	            return response.json();
+	        }.bind(this)).then(function (json) {
+	            this.setState({
+	                'options': json
+	            });
+	            console.log('parsed json', json);
+	        }.bind(this)).catch(function (ex) {
+	            console.log('parsing failed', ex);
+	        });
+	    },
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            options: options
+	        };
+	    },
+	
 	    logChange: function logChange(val) {
 	        console.log("Selected: " + val);
 	    },
@@ -36373,8 +36393,7 @@
 	        return _react2.default.createElement(_reactSelect2.default, {
 	            name: 'form-field-name',
 	            value: 'one',
-	            options: options,
-	            loadOptions: getOptions,
+	            options: this.state.options,
 	            onChange: this.logChange
 	        });
 	    }

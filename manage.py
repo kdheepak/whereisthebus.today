@@ -6,8 +6,8 @@ from glob import glob
 from subprocess import call
 
 from flask_migrate import Migrate, MigrateCommand
-from flask.ext.script import Command, Manager, Option, Server, Shell
-from flask.ext.script.commands import Clean, ShowUrls
+from flask_script import Command, Manager, Option, Server, Shell
+from flask_script.commands import Clean, ShowUrls
 
 from whereisthebustoday.app import create_app
 from whereisthebustoday.database import db
