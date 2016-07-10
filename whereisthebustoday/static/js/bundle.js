@@ -514,15 +514,15 @@
 	
 	var _reactBurgerMenu2 = _interopRequireDefault(_reactBurgerMenu);
 	
-	var _googleMapReact = __webpack_require__(/*! google-map-react */ 274);
-	
-	var _googleMapReact2 = _interopRequireDefault(_googleMapReact);
-	
 	var _reactBootstrap = __webpack_require__(/*! react-bootstrap */ 296);
 	
 	var _MyDropdownList = __webpack_require__(/*! ./MyDropdownList.jsx */ 266);
 	
 	var _MyDropdownList2 = _interopRequireDefault(_MyDropdownList);
+	
+	var _MyGoogleMap = __webpack_require__(/*! ./MyGoogleMap.jsx */ 560);
+	
+	var _MyGoogleMap2 = _interopRequireDefault(_MyGoogleMap);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -611,10 +611,9 @@
 	          _react2.default.createElement(_MyDropdownList2.default, { currentSelection: this.state.selectedRoute, updateChange: this.requestRoute })
 	        )
 	      ),
-	      _react2.default.createElement(MyGoogleMap, {
+	      _react2.default.createElement(_MyGoogleMap2.default, {
 	        center: { lat: this.state.lat, lng: this.state.lng },
-	        zoom: 14,
-	        coordinates: coords1
+	        zoom: 14
 	      })
 	    );
 	  }
@@ -27122,7 +27121,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -60076,6 +60075,97 @@
 	var _ValidComponentChildren3 = _interopRequireDefault(_ValidComponentChildren2);
 	
 	exports.ValidComponentChildren = _ValidComponentChildren3['default'];
+
+/***/ },
+/* 560 */
+/*!************************************!*\
+  !*** ./client/app/MyGoogleMap.jsx ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _googleMapReact = __webpack_require__(/*! google-map-react */ 274);
+	
+	var _googleMapReact2 = _interopRequireDefault(_googleMapReact);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
+	var DEFAULT_REF = 'map';
+	var DEFAULT_HEIGHT = '400px';
+	
+	var MyGoogleMap = _react2.default.createClass({
+	    displayName: 'MyGoogleMap',
+	
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            bounds: [],
+	            zoom: this.props.zoom,
+	            center: this.props.center,
+	            coordinates: this.props.coordinates,
+	            height: this.props.height,
+	            googleApiLoaded: false
+	        };
+	    },
+	
+	    render: function render() {
+	        var _React$createElement;
+	
+	        var height = this.state.height || DEFAULT_HEIGHT;
+	        var ref = this.props.ref || DEFAULT_REF;
+	        return _react2.default.createElement(
+	            'div',
+	            { style: { height: height }, id: this.props.id, ref: ref },
+	            _react2.default.createElement(_googleMapReact2.default, (_React$createElement = {
+	                center: this.state.center,
+	                zoom: this.state.zoom,
+	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
+	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onGoogleApiLoaded', this.onGoogleApiLoaded), _defineProperty(_React$createElement, 'yesIWantToUseGoogleMapApiInternals', true), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement))
+	        );
+	    },
+	
+	    onGoogleApiLoaded: function onGoogleApiLoaded(_ref) {
+	        var map = _ref.map;
+	        var maps = _ref.maps;
+	
+	        this.setState({
+	            googleApiLoaded: true
+	        });
+	
+	        var bounds = new maps.LatLngBounds();
+	
+	        function extendBounds(lat, lng) {
+	            var latLng = new maps.LatLng(lat, lng);
+	            bounds.extend(latLng);
+	        }
+	        function extendCoordsBounds(coords) {
+	            for (var i = 0; i < coords.length; i++) {
+	                if (coords[i].hasOwnProperty('lat') && coords[i].hasOwnProperty('lng')) {
+	                    extendBounds(coords[i].lat, coords[i].lng);
+	                } else if (Array.isArray(coords[i])) {
+	                    extendCoordsBounds(coords[i]);
+	                }
+	            }
+	        }
+	
+	        extendCoordsBounds(this.state.coordinates.coords);
+	
+	        map.fitBounds(bounds);
+	    }
+	});
+	
+	exports.default = MyGoogleMap;
 
 /***/ }
 /******/ ]);

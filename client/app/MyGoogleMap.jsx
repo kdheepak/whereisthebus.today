@@ -1,62 +1,42 @@
-import React, { PropTypes, Component } from 'react';
+import React from 'react';
 import GoogleMap from 'google-map-react';
 
 const DEFAULT_REF = 'map';
 const DEFAULT_HEIGHT = '400px';
 
-export default class MyGoogleMap extends Component {
-    static propTypes = {
-        coordinates: PropTypes.object,
-        options: PropTypes.func,
-        center: PropTypes.array,
-        zoom: PropTypes.number,
-        height: PropTypes.string,
-        ref: PropTypes.string,
-        id: PropTypes.string
-    };
+var MyGoogleMap = React.createClass({
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
+    getInitialState: function() {
+        return {
             bounds: [],
-            zoom: props.zoom,
-            center: props.center,
-            coordinates: props.coordinates,
-            height: props.height,
+            zoom: this.props.zoom,
+            center: this.props.center,
+            coordinates: this.props.coordinates,
+            height: this.props.height,
             googleApiLoaded: false
         };
-    }
+    },
 
-    render() {
+    render: function() {
         const height = this.state.height || DEFAULT_HEIGHT;
         const ref = this.props.ref || DEFAULT_REF;
         return (
             <div style={{height: height}} id={this.props.id} ref={ref}>
                 <GoogleMap
-                    center={this.props.center}
-                    zoom={this.props.zoom}
+                    center={this.state.center}
+                    zoom={this.state.zoom}
                     bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
                     center={this.state.center}
                     zoom={this.state.zoom}
-                    onBoundsChange={this.onBoundsChange.bind(this)}
-                    onGoogleApiLoaded={this.onGoogleApiLoaded.bind(this)}
+                    onGoogleApiLoaded={this.onGoogleApiLoaded}
                     yesIWantToUseGoogleMapApiInternals
                     options={this.props.options}>
                 </GoogleMap>
             </div>
         );
-    }
+    },
 
-    onBoundsChange(center, zoom, bounds, marginBounds) {
-        this.setState({
-            zoom: zoom,
-            bounds: bounds,
-            center: center
-        });
-    }
-
-    onGoogleApiLoaded({map, maps}) {
+    onGoogleApiLoaded: function({map, maps}) {
         this.setState({
             googleApiLoaded: true
         });
@@ -81,4 +61,6 @@ export default class MyGoogleMap extends Component {
 
         map.fitBounds(bounds);
     }
-}
+})
+
+export default MyGoogleMap;

@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import BurgerMenu from 'react-burger-menu';
-import GoogleMap from 'google-map-react';
 
 import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import MyDropdownList from './MyDropdownList.jsx';
+import MyGoogleMap from './MyGoogleMap.jsx';
 
 var coords = {
   lat: 39.7433,
@@ -104,7 +104,6 @@ const App = React.createClass({
        <MyGoogleMap
         center={{lat: this.state.lat, lng: this.state.lng}}
         zoom={14}
-        coordinates={coords1}
         >
       </MyGoogleMap>
       </div>
