@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
+import BurgerMenu from 'react-burger-menu';
+
+import MyDropdownList from './MyDropdownList.jsx';
 
 var coords = {
   lat: 39.7433,
   lng: -104.9891
 };
-
 
 const App = React.createClass({
 
@@ -51,6 +53,12 @@ const App = React.createClass({
 
   render() {
     return (
+
+      <div className='fill'>
+
+      <MyDropdownList>
+      </MyDropdownList>
+
       <Gmaps
         width={'100%'}
         height={'100%'}
@@ -76,6 +84,7 @@ const App = React.createClass({
           radius={500}
           onClick={this.onClick} />
       </Gmaps>
+      </div>
     );
   }
 

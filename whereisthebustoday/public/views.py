@@ -11,11 +11,22 @@ from whereisthebustoday.utils import flash_errors
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 
+import json
 
 @login_manager.user_loader
 def load_user(user_id):
     """Load user by ID."""
     return User.get_by_id(int(user_id))
+
+@blueprint.route('/api/routes', methods=['GET', 'POST'])
+def transit_routes():
+    json_data = [
+      { 'value': 'one', 'label': 'One' },
+      { 'value': 'two', 'label': 'Two' },
+      { 'value': 'two', 'label': 'Two' },
+    ]
+
+    return json.dumps(json_data)
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
