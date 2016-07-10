@@ -7,8 +7,10 @@ from flask import Flask, request, render_template
 
 import logging
 
-logger = logging.getLogger('app')
-hdlr = logging.FileHandler(os.path.join(__file__, 'logger.log'))
+current_folder = os.path.dirname(os.path.realpath(__file__))
+
+logger = logging.getLogger(__name__)
+hdlr = logging.FileHandler(os.path.join(current_folder, 'logger.log'))
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
