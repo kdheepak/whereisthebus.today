@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
 import BurgerMenu from 'react-burger-menu';
+import GoogleMap from 'google-map-react';
+
+import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import MyDropdownList from './MyDropdownList.jsx';
 
@@ -30,6 +32,7 @@ const App = React.createClass({
     return {
         lat: this.props.lat,
         lng: this.props.lng,
+        selectedRoute: '',
     };
   },
 
@@ -51,39 +54,59 @@ const App = React.createClass({
     console.log('onClick', e);
   },
 
+  requestRoute(val) {
+    console.log(val)
+    this.setState({
+        selectedRoute: val.value
+    })
+  },
+
   render() {
+        const defaultOptions = {
+            strokeWidth: 1,
+            stroke: '#FF5106',
+            strokeOpacity: '0.8',
+            fill: '#FF4234',
+            fillOpacity: '0.3',
+            onMouseEnter: function(e) {
+            },
+            onMouseLeave: function(e) {
+            }
+        };
+        const coords1 = {
+            coords: [
+                {lat: 39.7433,lng: -104.9891},
+                {lat: 25.774, lng: -80.190},
+                {lat: 18.466, lng: -66.118},
+                {lat: 32.321, lng: -64.757},
+                {lat: 25.774, lng: -80.190}
+            ],
+            options: defaultOptions
+        };
     return (
 
       <div className='fill'>
 
-      <MyDropdownList>
-      </MyDropdownList>
+      <div className='row'>
 
-      <Gmaps
-        width={'100%'}
-        height={'100%'}
-        lat={this.state.lat}
-        lng={this.state.lng}
+        <div className='column-sm-2'>
+            <Button>Default</Button>
+        </div>
+
+        <div className='column-sm-10'>
+          <MyDropdownList currentSelection={this.state.selectedRoute} updateChange={this.requestRoute}>
+          </MyDropdownList>
+        </div>
+
+
+      </div>
+
+       <MyGoogleMap
+        center={{lat: this.state.lat, lng: this.state.lng}}
         zoom={14}
-        loadingMessage={'Be happy'}
-        params={{v: '3.exp', key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
-        onMapCreated={this.onMapCreated}>
-        <Marker
-          lat={this.state.lat}
-          lng={this.state.lng}
-          draggable={true}
-          onDragEnd={this.onDragEnd} />
-        <InfoWindow
-          lat={this.state.lat}
-          lng={this.state.lng}
-          content={'Hello, React :)'}
-          onCloseClick={this.onCloseClick} />
-        <Circle
-          lat={this.state.lat}
-          lng={this.state.lng}
-          radius={500}
-          onClick={this.onClick} />
-      </Gmaps>
+        coordinates={coords1}
+        >
+      </MyGoogleMap>
       </div>
     );
   }

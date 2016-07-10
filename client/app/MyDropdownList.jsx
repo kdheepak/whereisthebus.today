@@ -33,26 +33,22 @@ var MyDropdownList = React.createClass({
               console.log('parsing failed', ex);
           })
 
-    }, 
+    },
 
     getInitialState : function() {
         return {
-            options: options
+            options: options,
         }
-    },
-
-    logChange : function (val) {
-    console.log("Selected: " + val);
     },
 
     render : function () {
     return (
         <Select
             name="form-field-name"
-            value="one"
+            value={this.props.currentSelection}
             options={this.state.options}
-            onChange={this.logChange}
-        /> 
+            onChange={this.props.updateChange}
+        />
         );
     },
 
