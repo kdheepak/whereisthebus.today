@@ -3,7 +3,6 @@
 from flask import Flask, render_template
 
 from whereisthebustoday import public, user
-from whereisthebustoday.assets import assets
 from whereisthebustoday.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
 from whereisthebustoday.settings import ProdConfig
 
@@ -23,7 +22,6 @@ def create_app(config_object=ProdConfig):
 
 def register_extensions(app):
     """Register Flask extensions."""
-    assets.init_app(app)
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
