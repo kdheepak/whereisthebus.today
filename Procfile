@@ -1,1 +1,1 @@
-web: gunicorn app.app:app --log-file -
+web: gunicorn whereisthebustoday.app:create_app\(\) --log-file -
