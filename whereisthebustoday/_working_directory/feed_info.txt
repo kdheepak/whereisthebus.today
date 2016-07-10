@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+RTD,http://rtd-denver.com,en,20160424,20161022,Merged-15063M15032-20160708-035600
