@@ -60,12 +60,12 @@ const App = React.createClass({
     })
 
 
-    fetch('/api/route',  {
-           method: 'POST',
-           body: JSON.stringify({
-                   route: val.value,
-           })
+    fetch('/api/route', {
+        method: 'POST',
+        body: JSON.stringify({
+            route: val.value,
           })
+    })
               .then(function(response) {
                 console.log(response.headers.get('Content-Type'))
                 console.log(response.headers.get('Date'))

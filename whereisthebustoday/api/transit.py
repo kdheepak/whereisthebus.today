@@ -17,6 +17,38 @@ working_directory = os.path.abspath(os.path.join(current_folder, '../_working_di
 UTC_OFFSET = int(os.getenv('OFFSET', 0))
 DEFAULT_LOCATION = {u'lat': 39.7433814, u'lng': -104.98910989999999}
 
+def get_trips(route_id=None, trip_headsign=None):
+
+    df = pd.read_csv(os.path.join(working_directory, 'trips.txt'))
+
+    if route_id is None:
+
+        return list(df['route_id'].unique())
+
+    elif trip_headsign is None:
+
+        return list(df[df['route_id'] == str(route_id)]['trip_headsign'].unique())
+
+    else:
+
+        return list(df[(df['route_id'] == str(route_id)) & (df['trip_headsign'] == str(trip_headsign))]['trip_id'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def get_gtfs_data(force=False):
     url = 'http://www.rtd-denver.com/GoogleFeeder/google_transit.zip'
     headers_file = 'google_feeder_headers.txt'
