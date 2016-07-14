@@ -57,9 +57,6 @@ var MyGoogleMap = React.createClass({
             }
         }
 
-        extendCoordsBounds(this.state.coordinates.coords);
-
-        map.fitBounds(bounds);
     }
 })
 

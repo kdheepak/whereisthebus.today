@@ -546,14 +546,40 @@
 	    } catch (err) {
 	      console.log(err.message);
 	    }
+	
+	    fetch('/api/routes').then(function (response) {
+	      console.log(response.headers.get('Content-Type'));
+	      console.log(response.headers.get('Date'));
+	      console.log(response.status);
+	      console.log(response.statusText);
+	      if (response.status == 200) {
+	        return response.json();
+	      } else {
+	        return response.text();
+	      }
+	    }.bind(this)).then(function (json) {
+	      this.setState({
+	        routeOptions: json
+	      });
+	      console.log(json);
+	    }.bind(this)).catch(function (ex) {
+	      console.log('parsing failed', ex);
+	    });
 	  },
 	
 	  getInitialState: function getInitialState() {
 	    return {
 	      lat: this.props.lat,
 	      lng: this.props.lng,
-	      selectedRoute: ''
+	      selectedRoute: '',
+	      routeOptions: []
 	    };
+	  },
+	
+	  updateSelectButton: function updateSelectButton(event) {
+	
+	    console.log("Received event from select button");
+	    console.log(event.target.value);
 	  },
 	
 	  onMapCreated: function onMapCreated(map) {
@@ -575,12 +601,7 @@
 	      selectedRoute: val.value
 	    });
 	
-	    fetch('/api/route', {
-	      method: 'POST',
-	      body: JSON.stringify({
-	        route: val.value
-	      })
-	    }).then(function (response) {
+	    fetch('/api/route/' + val.value).then(function (response) {
 	      console.log(response.headers.get('Content-Type'));
 	      console.log(response.headers.get('Date'));
 	      console.log(response.status);
@@ -606,10 +627,15 @@
 	      onMouseEnter: function onMouseEnter(e) {},
 	      onMouseLeave: function onMouseLeave(e) {}
 	    };
-	    var coords1 = {
-	      coords: [{ lat: 39.7433, lng: -104.9891 }, { lat: 25.774, lng: -80.190 }, { lat: 18.466, lng: -66.118 }, { lat: 32.321, lng: -64.757 }, { lat: 25.774, lng: -80.190 }],
-	      options: defaultOptions
-	    };
+	
+	    var optionRender = this.state.routeOptions.map(function (opt) {
+	      return _react2.default.createElement(
+	        'option',
+	        { value: opt.value },
+	        opt.value
+	      );
+	    });
+	
 	    return _react2.default.createElement(
 	      'div',
 	      { className: 'fill' },
@@ -618,17 +644,12 @@
 	        { className: 'row' },
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'column-sm-2' },
+	          { className: 'column-sm-12' },
 	          _react2.default.createElement(
-	            _reactBootstrap.Button,
-	            null,
-	            'Default'
+	            'select',
+	            { className: 'selectpicker', id: 'routename', onChange: this.updateSelectButton },
+	            optionRender
 	          )
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'column-sm-10' },
-	          _react2.default.createElement(_MyDropdownList2.default, { currentSelection: this.state.selectedRoute, updateChange: this.requestRoute })
 	        )
 	      ),
 	      _react2.default.createElement(_MyGoogleMap2.default, {
@@ -27125,7 +27146,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -57358,10 +57379,6 @@
 	                }
 	            }
 	        }
-	
-	        extendCoordsBounds(this.state.coordinates.coords);
-	
-	        map.fitBounds(bounds);
 	    }
 	});
 	

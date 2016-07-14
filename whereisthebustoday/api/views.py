@@ -13,7 +13,7 @@ blueprint = Blueprint('api', __name__, url_prefix='/api', static_folder='../stat
 
 
 @csrf_protect.exempt
-@blueprint.route('/routes', methods=['GET', 'POST'])
+@blueprint.route('/routes/', methods=['GET'])
 def transit_routes():
 
     options = sorted(get_bus_list())

@@ -7,7 +7,7 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 import MyDropdownList from './MyDropdownList.jsx';
 import MyGoogleMap from './MyGoogleMap.jsx';
 
-var coords = {
+const coords = {
   lat: 39.7433,
   lng: -104.9891
 };
@@ -26,6 +26,30 @@ const App = React.createClass({
         catch(err) {
             console.log(err.message);
         }
+
+    fetch('/api/routes')
+              .then(function(response) {
+                console.log(response.headers.get('Content-Type'))
+                console.log(response.headers.get('Date'))
+                console.log(response.status)
+                console.log(response.statusText)
+                if (response.status == 200){
+                            return response.json();
+                          }
+                else {
+                  return response.text()
+                }
+              }.bind(this))
+              .then(function(json) {
+                    this.setState({
+                        routeOptions: json
+                    })
+                    console.log(json)
+              }.bind(this)).catch(function(ex) {
+                  console.log('parsing failed', ex);
+              })
+
+
     },
 
   getInitialState: function() {
@@ -33,7 +57,15 @@ const App = React.createClass({
         lat: this.props.lat,
         lng: this.props.lng,
         selectedRoute: '',
+        routeOptions: [],
     };
+  },
+
+  updateSelectButton: function(event) {
+
+      console.log("Received event from select button")
+      console.log(event.target.value)
+
   },
 
   onMapCreated(map) {
@@ -59,13 +91,7 @@ const App = React.createClass({
         selectedRoute: val.value
     })
 
-
-    fetch('/api/route', {
-        method: 'POST',
-        body: JSON.stringify({
-            route: val.value,
-          })
-    })
+    fetch('/api/route/'+val.value)
               .then(function(response) {
                 console.log(response.headers.get('Content-Type'))
                 console.log(response.headers.get('Date'))
@@ -99,29 +125,25 @@ const App = React.createClass({
             onMouseLeave: function(e) {
             }
         };
-        const coords1 = {
-            coords: [
-                {lat: 39.7433,lng: -104.9891},
-                {lat: 25.774, lng: -80.190},
-                {lat: 18.466, lng: -66.118},
-                {lat: 32.321, lng: -64.757},
-                {lat: 25.774, lng: -80.190}
-            ],
-            options: defaultOptions
-        };
+
+        var optionRender = this.state.routeOptions.map(function(opt) {
+              return (
+                <option value={opt.value}>
+                    {opt.value}
+                </option>
+              );
+            });
+
     return (
 
       <div className='fill'>
 
       <div className='row'>
 
-        <div className='column-sm-2'>
-            <Button>Default</Button>
-        </div>
-
-        <div className='column-sm-10'>
-          <MyDropdownList currentSelection={this.state.selectedRoute} updateChange={this.requestRoute}>
-          </MyDropdownList>
+        <div className='column-sm-12'>
+            <select className="selectpicker" id='routename' onChange={this.updateSelectButton}>
+                {optionRender}
+            </select>
         </div>
 
 
