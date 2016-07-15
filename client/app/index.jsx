@@ -6,6 +6,7 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import MyDropdownList from './MyDropdownList.jsx';
 import MyGoogleMap from './MyGoogleMap.jsx';
+import MySideBar from './MySideBar.jsx';
 
 const coords = {
   lat: 39.7433,
@@ -136,25 +137,21 @@ const App = React.createClass({
 
     return (
 
-      <div className='fill'>
+    <div id="wrapper">
+          <div style={{float: 'left', width: '15%'}}>
+              <select className="selectpicker" id='routename' onChange={this.updateSelectButton} >
+                    {optionRender}
+              </select>
+          </div>
+          <div id="map-canvas" style={{float: 'right', width: '85%', height: '750px'}}>
+              <MyGoogleMap
+               center={{lat: this.state.lat, lng: this.state.lng}}
+               zoom={14}
+               >
+             </MyGoogleMap>
+          </div>
+    </div>
 
-      <div className='row'>
-
-        <div className='column-sm-12'>
-            <select className="selectpicker" id='routename' onChange={this.updateSelectButton}>
-                {optionRender}
-            </select>
-        </div>
-
-
-      </div>
-
-       <MyGoogleMap
-        center={{lat: this.state.lat, lng: this.state.lng}}
-        zoom={14}
-        >
-      </MyGoogleMap>
-      </div>
     );
   }
 

@@ -524,6 +524,10 @@
 	
 	var _MyGoogleMap2 = _interopRequireDefault(_MyGoogleMap);
 	
+	var _MySideBar = __webpack_require__(/*! ./MySideBar.jsx */ 545);
+	
+	var _MySideBar2 = _interopRequireDefault(_MySideBar);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var coords = {
@@ -638,24 +642,24 @@
 	
 	    return _react2.default.createElement(
 	      'div',
-	      { className: 'fill' },
+	      { id: 'wrapper' },
 	      _react2.default.createElement(
 	        'div',
-	        { className: 'row' },
+	        { style: { float: 'left', width: '15%' } },
 	        _react2.default.createElement(
-	          'div',
-	          { className: 'column-sm-12' },
-	          _react2.default.createElement(
-	            'select',
-	            { className: 'selectpicker', id: 'routename', onChange: this.updateSelectButton },
-	            optionRender
-	          )
+	          'select',
+	          { className: 'selectpicker', id: 'routename', onChange: this.updateSelectButton },
+	          optionRender
 	        )
 	      ),
-	      _react2.default.createElement(_MyGoogleMap2.default, {
-	        center: { lat: this.state.lat, lng: this.state.lng },
-	        zoom: 14
-	      })
+	      _react2.default.createElement(
+	        'div',
+	        { id: 'map-canvas', style: { float: 'right', width: '85%', height: '750px' } },
+	        _react2.default.createElement(_MyGoogleMap2.default, {
+	          center: { lat: this.state.lat, lng: this.state.lng },
+	          zoom: 14
+	        })
+	      )
 	    );
 	  }
 	});
@@ -60187,6 +60191,41 @@
 	  var numberTag = '[object Number]';
 	  return typeof value === 'number' || isObjectLike(value) && objectToString.call(value) === numberTag;
 	}
+
+/***/ },
+/* 545 */
+/*!**********************************!*\
+  !*** ./client/app/MySideBar.jsx ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var MySideBar = _react2.default.createClass({
+	    displayName: 'MySideBar',
+	
+	
+	    getInitialState: function getInitialState() {
+	        return {};
+	    },
+	
+	    render: function render() {
+	        return _react2.default.createElement('div', null);
+	    }
+	
+	});
+	
+	exports.default = MySideBar;
 
 /***/ }
 /******/ ]);
