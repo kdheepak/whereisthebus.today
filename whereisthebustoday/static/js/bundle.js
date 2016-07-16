@@ -536,7 +536,8 @@
 	            navigator.geolocation.getCurrentPosition(function (position) {
 	                this.setState({
 	                    lat: position.coords.latitude,
-	                    lng: position.coords.longitude
+	                    lng: position.coords.longitude,
+	                    setCurrentLocation: true
 	                });
 	            }.bind(this));
 	        } catch (err) {
@@ -568,7 +569,8 @@
 	            lat: this.props.lat,
 	            lng: this.props.lng,
 	            selectedRoute: '',
-	            routeOptions: []
+	            routeOptions: [],
+	            setCurrentLocation: false
 	        };
 	    },
 	
@@ -55775,7 +55777,7 @@
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
 	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onGoogleApiLoaded', this.onGoogleApiLoaded), _defineProperty(_React$createElement, 'yesIWantToUseGoogleMapApiInternals', true), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
-	            _react2.default.createElement(_MyCurrentLocation2.default, { lat: this.state.center.lat, lng: this.state.center.lng }),
+	            this.state.setCurrentLocation ? _react2.default.createElement(_MyCurrentLocation2.default, { lat: this.state.center.lat, lng: this.state.center.lng }) : _react2.default.createElement('div', null),
 	            _react2.default.createElement(_MyRoute2.default, { data: this.state.markerData })
 	        );
 	    },

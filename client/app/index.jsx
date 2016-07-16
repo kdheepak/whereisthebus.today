@@ -18,7 +18,8 @@ const App = React.createClass({
             navigator.geolocation.getCurrentPosition(function(position) {
                 this.setState({
                         lat: position.coords.latitude,
-                        lng: position.coords.longitude
+                        lng: position.coords.longitude,
+                        setCurrentLocation: true,
                 });
                 }.bind(this));
         }
@@ -57,6 +58,7 @@ const App = React.createClass({
         lng: this.props.lng,
         selectedRoute: '',
         routeOptions: [],
+        setCurrentLocation: false,
     };
   },
 

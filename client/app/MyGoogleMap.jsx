@@ -64,8 +64,12 @@ var MyGoogleMap = React.createClass({
                 yesIWantToUseGoogleMapApiInternals
                 options={this.props.options}>
 
-                <MyCurrentLocation lat={this.state.center.lat} lng={this.state.center.lng}>
-                </MyCurrentLocation>
+                {this.state.setCurrentLocation ? (
+                    <MyCurrentLocation lat={this.state.center.lat} lng={this.state.center.lng}>
+                    </MyCurrentLocation>
+                ) :
+                <div/>}
+
 
                 <MyRoute data={this.state.markerData}>
                 </MyRoute>
