@@ -16,11 +16,13 @@ const App = React.createClass({
 
     componentDidMount: function() {
         try {
+            console.log('Trying to get current location')
             navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position)
                 this.setState({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
-                        setCurrentLocation: true,
+                        setCurrentLocation: true
                 });
                 }.bind(this));
         }
@@ -56,11 +58,11 @@ const App = React.createClass({
 
   getInitialState: function() {
     return {
-        lat: this.props.lat,
-        lng: this.props.lng,
+        lat: coords.lat,
+        lng: coords.lng,
         selectedRoute: '',
         routeOptions: [],
-        setCurrentLocation: false,
+        setCurrentLocation: true
     };
   },
 
@@ -130,4 +132,4 @@ const App = React.createClass({
 
 });
 
-ReactDOM.render(<App lat={coords.lat} lng={coords.lng} />, document.getElementById('app'));
+ReactDOM.render(<App/>, document.getElementById('app'));

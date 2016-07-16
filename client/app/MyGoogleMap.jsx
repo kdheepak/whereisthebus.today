@@ -18,13 +18,15 @@ var MyGoogleMap = React.createClass({
             height: this.props.height,
             googleApiLoaded: false,
             selectedRoute: '',
-            data: []
+            data: [],
+            setCurrentLocation: this.props.setCurrentLocation
         };
     },
 
     componentWillReceiveProps: function(nextProps) {
       this.setState({
-        selectedRoute: nextProps.selectedRoute
+        selectedRoute: nextProps.selectedRoute,
+        setCurrentLocation: nextProps.setCurrentLocation
       });
 
         fetch('/api/markers/'+nextProps.selectedRoute)
@@ -82,7 +84,7 @@ var MyGoogleMap = React.createClass({
                 onChildClick={this._onChildClick}
                 options={this.props.options}>
 
-                <MyCurrentLocation setCurrentLocation={this.props.setCurrentLocation} lat={this.state.center.lat} lng={this.state.center.lng}>
+                <MyCurrentLocation setCurrentLocation={this.state.setCurrentLocation} lat={this.state.center.lat} lng={this.state.center.lng}>
                 </MyCurrentLocation>
 
                 {RenderBus}

@@ -537,7 +537,9 @@
 	
 	  componentDidMount: function componentDidMount() {
 	    try {
+	      console.log('Trying to get current location');
 	      navigator.geolocation.getCurrentPosition(function (position) {
+	        console.log(position);
 	        this.setState({
 	          lat: position.coords.latitude,
 	          lng: position.coords.longitude,
@@ -571,11 +573,11 @@
 	
 	  getInitialState: function getInitialState() {
 	    return {
-	      lat: this.props.lat,
-	      lng: this.props.lng,
+	      lat: coords.lat,
+	      lng: coords.lng,
 	      selectedRoute: '',
 	      routeOptions: [],
-	      setCurrentLocation: false
+	      setCurrentLocation: true
 	    };
 	  },
 	
@@ -632,7 +634,7 @@
 	  }
 	});
 	
-	_reactDom2.default.render(_react2.default.createElement(App, { lat: coords.lat, lng: coords.lng }), document.getElementById('app'));
+	_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('app'));
 
 /***/ },
 /* 3 */
@@ -55729,13 +55731,15 @@
 	            height: this.props.height,
 	            googleApiLoaded: false,
 	            selectedRoute: '',
-	            data: []
+	            data: [],
+	            setCurrentLocation: this.props.setCurrentLocation
 	        };
 	    },
 	
 	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	        this.setState({
-	            selectedRoute: nextProps.selectedRoute
+	            selectedRoute: nextProps.selectedRoute,
+	            setCurrentLocation: nextProps.setCurrentLocation
 	        });
 	
 	        fetch('/api/markers/' + nextProps.selectedRoute).then(function (response) {
@@ -55788,7 +55792,7 @@
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
 	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
-	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.props.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
+	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.state.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
 	            RenderBus
 	        );
 	    }
@@ -58624,11 +58628,23 @@
 	    displayName: 'MyCurrentLocation',
 	
 	
+	    getInitialState: function getInitialState() {
+	        return {
+	            setCurrentLocation: false
+	        };
+	    },
+	
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	        this.setState({
+	            setCurrentLocation: nextProps.setCurrentLocation
+	        });
+	    },
+	
 	    render: function render() {
 	        return _react2.default.createElement(
 	            'div',
 	            null,
-	            this.props.setCurrentLocation ? _react2.default.createElement('div', { style: {
+	            this.state.setCurrentLocation ? _react2.default.createElement('div', { style: {
 	                    position: 'absolute',
 	                    width: 10,
 	                    height: 10,

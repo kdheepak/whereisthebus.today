@@ -2,10 +2,22 @@ import React from 'react';
 
 var MyCurrentLocation = React.createClass({
 
+    getInitialState:function(){
+        return({
+            setCurrentLocation: false
+        })
+    },
+    
+    componentWillReceiveProps: function(nextProps) {
+      this.setState({
+        setCurrentLocation: nextProps.setCurrentLocation
+      });
+    },
+
     render: function() {
         return (
             <div>
-            {this.props.setCurrentLocation ? (
+            {this.state.setCurrentLocation ? (
                     <div style={{
                         position: 'absolute',
                         width: 10,
