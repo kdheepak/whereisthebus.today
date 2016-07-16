@@ -5,6 +5,7 @@ import BurgerMenu from 'react-burger-menu';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import MyGoogleMap from './MyGoogleMap.jsx';
+import MySelectMenu from './MySelectMenu.jsx';
 
 const coords = {
   lat: 39.7433,
@@ -105,22 +106,14 @@ const App = React.createClass({
             }
         };
 
-    var optionRender = this.state.routeOptions.map(function(opt) {
-          return (
-            <option key={opt.value} value={opt.value}>
-                {opt.value}
-            </option>
-          );
-        });
-
     return (
 
     <div id="wrapper">
-          <div style={{float: 'left'}}>
-              <select className="selectpicker" id='routename' onChange={this.updateSelectButton} >
-                    {optionRender}
-              </select>
-          </div>
+
+          <MySelectMenu onChange={this.updateSelectButton} routeOptions={this.state.routeOptions}>
+          </MySelectMenu>
+
+
           <div id="map-canvas" style={{width: '100%', height: '100vh'}}>
               <MyGoogleMap
                center={{lat: this.state.lat, lng: this.state.lng}}

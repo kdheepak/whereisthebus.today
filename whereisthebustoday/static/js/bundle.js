@@ -520,128 +520,116 @@
 	
 	var _MyGoogleMap2 = _interopRequireDefault(_MyGoogleMap);
 	
+	var _MySelectMenu = __webpack_require__(/*! ./MySelectMenu.jsx */ 540);
+	
+	var _MySelectMenu2 = _interopRequireDefault(_MySelectMenu);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var coords = {
-	    lat: 39.7433,
-	    lng: -104.9891
+	  lat: 39.7433,
+	  lng: -104.9891
 	};
 	
 	var App = _react2.default.createClass({
-	    displayName: 'App',
+	  displayName: 'App',
 	
 	
-	    componentDidMount: function componentDidMount() {
-	        try {
-	            navigator.geolocation.getCurrentPosition(function (position) {
-	                this.setState({
-	                    lat: position.coords.latitude,
-	                    lng: position.coords.longitude,
-	                    setCurrentLocation: true
-	                });
-	            }.bind(this));
-	        } catch (err) {
-	            console.log('Cannot get location');
-	            console.log(err.message);
-	        }
-	
-	        fetch('/api/routes').then(function (response) {
-	            // console.log(response.headers.get('Content-Type'))
-	            // console.log(response.headers.get('Date'))
-	            // console.log(response.status)
-	            // console.log(response.statusText)
-	            if (response.status == 200) {
-	                return response.json();
-	            } else {
-	                return response.text();
-	            }
-	        }.bind(this)).then(function (json) {
-	            this.setState({
-	                routeOptions: json
-	            });
-	            console.log(json);
-	        }.bind(this)).catch(function (ex) {
-	            console.log('parsing failed', ex);
-	        });
-	    },
-	
-	    getInitialState: function getInitialState() {
-	        return {
-	            lat: this.props.lat,
-	            lng: this.props.lng,
-	            selectedRoute: '',
-	            routeOptions: [],
-	            setCurrentLocation: false
-	        };
-	    },
-	
-	    updateSelectButton: function updateSelectButton(event) {
-	
-	        console.log("Received event from select button");
-	        console.log(event.target.value);
-	
+	  componentDidMount: function componentDidMount() {
+	    try {
+	      navigator.geolocation.getCurrentPosition(function (position) {
 	        this.setState({
-	            selectedRoute: event.target.value
+	          lat: position.coords.latitude,
+	          lng: position.coords.longitude,
+	          setCurrentLocation: true
 	        });
-	    },
-	
-	    onMapCreated: function onMapCreated(map) {
-	        map.setOptions({
-	            disableDefaultUI: true
-	        });
-	    },
-	    onDragEnd: function onDragEnd(e) {
-	        console.log('onDragEnd', e);
-	    },
-	    onCloseClick: function onCloseClick() {
-	        console.log('onCloseClick');
-	    },
-	    onClick: function onClick(e) {
-	        console.log('onClick', e);
-	    },
-	    render: function render() {
-	        var defaultOptions = {
-	            strokeWidth: 1,
-	            stroke: '#FF5106',
-	            strokeOpacity: '0.8',
-	            fill: '#FF4234',
-	            fillOpacity: '0.3',
-	            onMouseEnter: function onMouseEnter(e) {},
-	            onMouseLeave: function onMouseLeave(e) {}
-	        };
-	
-	        var optionRender = this.state.routeOptions.map(function (opt) {
-	            return _react2.default.createElement(
-	                'option',
-	                { key: opt.value, value: opt.value },
-	                opt.value
-	            );
-	        });
-	
-	        return _react2.default.createElement(
-	            'div',
-	            { id: 'wrapper' },
-	            _react2.default.createElement(
-	                'div',
-	                { style: { float: 'left' } },
-	                _react2.default.createElement(
-	                    'select',
-	                    { className: 'selectpicker', id: 'routename', onChange: this.updateSelectButton },
-	                    optionRender
-	                )
-	            ),
-	            _react2.default.createElement(
-	                'div',
-	                { id: 'map-canvas', style: { width: '100%', height: '100vh' } },
-	                _react2.default.createElement(_MyGoogleMap2.default, {
-	                    center: { lat: this.state.lat, lng: this.state.lng },
-	                    zoom: 14,
-	                    selectedRoute: this.state.selectedRoute,
-	                    setCurrentLocation: this.state.setCurrentLocation
-	                })
-	            )
-	        );
+	      }.bind(this));
+	    } catch (err) {
+	      console.log('Cannot get location');
+	      console.log(err.message);
 	    }
+	
+	    fetch('/api/routes').then(function (response) {
+	      // console.log(response.headers.get('Content-Type'))
+	      // console.log(response.headers.get('Date'))
+	      // console.log(response.status)
+	      // console.log(response.statusText)
+	      if (response.status == 200) {
+	        return response.json();
+	      } else {
+	        return response.text();
+	      }
+	    }.bind(this)).then(function (json) {
+	      this.setState({
+	        routeOptions: json
+	      });
+	      console.log(json);
+	    }.bind(this)).catch(function (ex) {
+	      console.log('parsing failed', ex);
+	    });
+	  },
+	
+	  getInitialState: function getInitialState() {
+	    return {
+	      lat: this.props.lat,
+	      lng: this.props.lng,
+	      selectedRoute: '',
+	      routeOptions: [],
+	      setCurrentLocation: false
+	    };
+	  },
+	
+	  updateSelectButton: function updateSelectButton(event) {
+	
+	    console.log("Received event from select button");
+	    console.log(event.target.value);
+	
+	    this.setState({
+	      selectedRoute: event.target.value
+	    });
+	  },
+	
+	  onMapCreated: function onMapCreated(map) {
+	    map.setOptions({
+	      disableDefaultUI: true
+	    });
+	  },
+	  onDragEnd: function onDragEnd(e) {
+	    console.log('onDragEnd', e);
+	  },
+	  onCloseClick: function onCloseClick() {
+	    console.log('onCloseClick');
+	  },
+	  onClick: function onClick(e) {
+	    console.log('onClick', e);
+	  },
+	  render: function render() {
+	    var defaultOptions = {
+	      strokeWidth: 1,
+	      stroke: '#FF5106',
+	      strokeOpacity: '0.8',
+	      fill: '#FF4234',
+	      fillOpacity: '0.3',
+	      onMouseEnter: function onMouseEnter(e) {},
+	      onMouseLeave: function onMouseLeave(e) {}
+	    };
+	
+	    return _react2.default.createElement(
+	      'div',
+	      { id: 'wrapper' },
+	      _react2.default.createElement(_MySelectMenu2.default, { onChange: this.updateSelectButton, routeOptions: this.state.routeOptions }),
+	      _react2.default.createElement(
+	        'div',
+	        { id: 'map-canvas', style: { width: '100%', height: '100vh' } },
+	        _react2.default.createElement(_MyGoogleMap2.default, {
+	          center: { lat: this.state.lat, lng: this.state.lng },
+	          zoom: 14,
+	          selectedRoute: this.state.selectedRoute,
+	          setCurrentLocation: this.state.setCurrentLocation
+	        })
+	      )
+	    );
+	  }
 	});
 	
 	_reactDom2.default.render(_react2.default.createElement(App, { lat: coords.lat, lng: coords.lng }), document.getElementById('app'));
@@ -58721,6 +58709,59 @@
 	});
 	
 	exports.default = MyRoute;
+
+/***/ },
+/* 540 */
+/*!*************************************!*\
+  !*** ./client/app/MySelectMenu.jsx ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var MySelectMenu = _react2.default.createClass({
+	    displayName: "MySelectMenu",
+	
+	    render: function render() {
+	
+	        var optionRender = this.props.routeOptions.map(function (opt) {
+	            return _react2.default.createElement(
+	                "option",
+	                { key: opt.value, value: opt.value },
+	                opt.value
+	            );
+	        });
+	
+	        return _react2.default.createElement(
+	            "div",
+	            null,
+	            _react2.default.createElement(
+	                "select",
+	                { className: "selectpicker",
+	                    "data-live-search": "true",
+	                    id: "routename",
+	                    onChange: this.props.onChange,
+	                    "data-width": "100%",
+	                    title: "Select Bus Route..."
+	                },
+	                optionRender
+	            )
+	        );
+	    }
+	
+	});
+	
+	exports.default = MySelectMenu;
 
 /***/ }
 /******/ ]);
