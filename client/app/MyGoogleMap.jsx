@@ -37,7 +37,7 @@ var MyGoogleMap = React.createClass({
                                 return response.json();
                               }
                     else {
-                      return response.text()
+                      return {markers: {}, routePaths: {}}
                     }
                   }.bind(this))
                   .then(function(json) {

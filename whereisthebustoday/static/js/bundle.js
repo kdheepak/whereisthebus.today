@@ -55758,7 +55758,7 @@
 	            if (response.status == 200) {
 	                return response.json();
 	            } else {
-	                return response.text();
+	                return { markers: {}, routePaths: {} };
 	            }
 	        }.bind(this)).then(function (json) {
 	            this.setState({
@@ -58687,7 +58687,29 @@
 	    displayName: 'MyRoute',
 	
 	
+	    getInitialState: function getInitialState() {
+	
+	        return {
+	            buses: []
+	        };
+	    },
+	
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	        try {} catch (e) {
+	            console.log(e);
+	        } finally {}
+	    },
+	
 	    render: function render() {
+	
+	        var buses = [];
+	
+	        var busRender = buses.map(function (bus) {
+	            console.log(bus);
+	            return _react2.default.createElement('div', {
+	                lat: bus[0], lng: bus[1] });
+	        });
+	
 	        return _react2.default.createElement('div', null);
 	    }
 	
