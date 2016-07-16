@@ -4,9 +4,7 @@ import BurgerMenu from 'react-burger-menu';
 
 import { Button, ButtonToolbar } from 'react-bootstrap';
 
-import MyDropdownList from './MyDropdownList.jsx';
 import MyGoogleMap from './MyGoogleMap.jsx';
-import MySideBar from './MySideBar.jsx';
 
 const coords = {
   lat: 39.7433,
@@ -67,6 +65,10 @@ const App = React.createClass({
       console.log("Received event from select button")
       console.log(event.target.value)
 
+      this.setState({
+          selectedRoute: event.target.value
+      })
+
   },
 
   onMapCreated(map) {
@@ -87,33 +89,6 @@ const App = React.createClass({
     console.log('onClick', e);
   },
 
-  requestRoute(val) {
-    this.setState({
-        selectedRoute: val.value
-    })
-
-    fetch('/api/route/'+val.value)
-              .then(function(response) {
-                console.log(response.headers.get('Content-Type'))
-                console.log(response.headers.get('Date'))
-                console.log(response.status)
-                console.log(response.statusText)
-                if (response.status == 200){
-                            return response.json();
-                          }
-                else {
-                  return response.text()
-                }
-              }.bind(this))
-              .then(function(json) {
-                    console.log(json)
-              }.bind(this)).catch(function(ex) {
-                  console.log('parsing failed', ex);
-              })
-
-
-  },
-
   render() {
         const defaultOptions = {
             strokeWidth: 1,
@@ -127,26 +102,27 @@ const App = React.createClass({
             }
         };
 
-        var optionRender = this.state.routeOptions.map(function(opt) {
-              return (
-                <option value={opt.value}>
-                    {opt.value}
-                </option>
-              );
-            });
+    var optionRender = this.state.routeOptions.map(function(opt) {
+          return (
+            <option key={opt.value} value={opt.value}>
+                {opt.value}
+            </option>
+          );
+        });
 
     return (
 
     <div id="wrapper">
-          <div style={{float: 'left', width: '15%'}}>
+          <div style={{float: 'left'}}>
               <select className="selectpicker" id='routename' onChange={this.updateSelectButton} >
                     {optionRender}
               </select>
           </div>
-          <div id="map-canvas" style={{float: 'right', width: '85%', height: '750px'}}>
+          <div id="map-canvas" style={{width: '100%', height: '100vh'}}>
               <MyGoogleMap
                center={{lat: this.state.lat, lng: this.state.lng}}
                zoom={14}
+               selectedRoute={this.state.selectedRoute}
                >
              </MyGoogleMap>
           </div>

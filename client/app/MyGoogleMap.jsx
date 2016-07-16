@@ -1,6 +1,9 @@
 import React from 'react';
 import GoogleMap from 'google-map-react';
 
+import MyCurrentLocation from './MyCurrentLocation.jsx';
+import MyRoute from './MyRoute.jsx';
+
 const DEFAULT_REF = 'map';
 const DEFAULT_HEIGHT = '100%';
 
@@ -13,26 +16,61 @@ var MyGoogleMap = React.createClass({
             center: this.props.center,
             coordinates: this.props.coordinates,
             height: this.props.height,
-            googleApiLoaded: false
+            googleApiLoaded: false,
+            selectedRoute: '',
+            markerData: []
         };
     },
 
+    componentWillReceiveProps: function(nextProps) {
+      this.setState({
+        selectedRoute: nextProps.selectedRoute
+      });
+
+        fetch('/api/markers/'+nextProps.selectedRoute)
+                  .then(function(response) {
+                    // console.log(response.headers.get('Content-Type'))
+                    // console.log(response.headers.get('Date'))
+                    // console.log(response.status)
+                    // console.log(response.statusText)
+                    if (response.status == 200){
+                                return response.json();
+                              }
+                    else {
+                      return response.text()
+                    }
+                  }.bind(this))
+                  .then(function(json) {
+                        this.setState({
+                            markerData: json
+                        })
+
+                  }.bind(this)).catch(function(ex) {
+                      console.log('parsing failed', ex);
+                  })
+
+    },
+
     render: function() {
-        const height = this.state.height || DEFAULT_HEIGHT;
-        const ref = this.props.ref || DEFAULT_REF;
+
         return (
-            <div style={{height: height}} id={this.props.id} ref={ref}>
-                <GoogleMap
-                    center={this.state.center}
-                    zoom={this.state.zoom}
-                    bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
-                    center={this.state.center}
-                    zoom={this.state.zoom}
-                    onGoogleApiLoaded={this.onGoogleApiLoaded}
-                    yesIWantToUseGoogleMapApiInternals
-                    options={this.props.options}>
-                </GoogleMap>
-            </div>
+            <GoogleMap
+                center={this.state.center}
+                zoom={this.state.zoom}
+                bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
+                center={this.state.center}
+                zoom={this.state.zoom}
+                onGoogleApiLoaded={this.onGoogleApiLoaded}
+                yesIWantToUseGoogleMapApiInternals
+                options={this.props.options}>
+
+                <MyCurrentLocation lat={this.state.center.lat} lng={this.state.center.lng}>
+                </MyCurrentLocation>
+
+                <MyRoute data={this.state.markerData}>
+                </MyRoute>
+
+            </GoogleMap>
         );
     },
 
