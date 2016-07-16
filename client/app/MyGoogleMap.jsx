@@ -82,6 +82,9 @@ var MyGoogleMap = React.createClass({
         console.log(childProps)
     },
 
+    _onClick: function(){
+        console.log("clicked on map")
+    },
     render: function() {
 
         const RenderBus = this.state.data.map((marker, index) => (
@@ -101,6 +104,7 @@ var MyGoogleMap = React.createClass({
                 bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
                 center={this.state.center}
                 zoom={this.state.zoom}
+                onClick={this._onClick}
                 onChildClick={this._onChildClick}
                 options={createMapOptions}
                 >

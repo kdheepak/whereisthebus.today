@@ -27120,7 +27120,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -55789,6 +55789,9 @@
 	        console.log(childProps);
 	    },
 	
+	    _onClick: function _onClick() {
+	        console.log("clicked on map");
+	    },
 	    render: function render() {
 	        var _React$createElement;
 	
@@ -55810,7 +55813,7 @@
 	                center: this.state.center,
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
-	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', createMapOptions), _React$createElement),
+	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onClick', this._onClick), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', createMapOptions), _React$createElement),
 	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.state.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
 	            RenderBus
 	        );
