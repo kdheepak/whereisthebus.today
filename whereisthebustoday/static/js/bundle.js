@@ -27130,7 +27130,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -55741,7 +55741,7 @@
 	            height: this.props.height,
 	            googleApiLoaded: false,
 	            selectedRoute: '',
-	            markerData: []
+	            data: []
 	        };
 	    },
 	
@@ -55761,16 +55761,37 @@
 	                return { markers: {}, routePaths: {} };
 	            }
 	        }.bind(this)).then(function (json) {
+	            var keys = [];
+	            for (var k in json.markers) {
+	                keys.push(k);
+	            }var buses = json.markers[keys[0]];
+	
 	            this.setState({
-	                markerData: json
+	                data: buses
 	            });
 	        }.bind(this)).catch(function (ex) {
 	            console.log('parsing failed', ex);
 	        });
 	    },
 	
+	    _onChildClick: function _onChildClick(key, childProps) {
+	        console.log(childProps);
+	    },
+	
 	    render: function render() {
 	        var _React$createElement;
+	
+	        var RenderBus = this.state.data.map(function (marker, index) {
+	            return _react2.default.createElement(
+	                'div',
+	                { lat: marker[0],
+	                    lng: marker[1],
+	                    key: marker[10]
+	                },
+	                _react2.default.createElement('div', { className: 'pin' }),
+	                _react2.default.createElement('div', { className: 'pulse' })
+	            );
+	        });
 	
 	        return _react2.default.createElement(
 	            _googleMapReact2.default,
@@ -55778,36 +55799,12 @@
 	                center: this.state.center,
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
-	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onGoogleApiLoaded', this.onGoogleApiLoaded), _defineProperty(_React$createElement, 'yesIWantToUseGoogleMapApiInternals', true), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
+	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
 	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.props.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
-	            _react2.default.createElement(_MyRoute2.default, { data: this.state.markerData })
+	            RenderBus
 	        );
-	    },
-	
-	    onGoogleApiLoaded: function onGoogleApiLoaded(_ref) {
-	        var map = _ref.map;
-	        var maps = _ref.maps;
-	
-	        this.setState({
-	            googleApiLoaded: true
-	        });
-	
-	        var bounds = new maps.LatLngBounds();
-	
-	        function extendBounds(lat, lng) {
-	            var latLng = new maps.LatLng(lat, lng);
-	            bounds.extend(latLng);
-	        }
-	        function extendCoordsBounds(coords) {
-	            for (var i = 0; i < coords.length; i++) {
-	                if (coords[i].hasOwnProperty('lat') && coords[i].hasOwnProperty('lng')) {
-	                    extendBounds(coords[i].lat, coords[i].lng);
-	                } else if (Array.isArray(coords[i])) {
-	                    extendCoordsBounds(coords[i]);
-	                }
-	            }
-	        }
 	    }
+	
 	});
 	
 	exports.default = MyGoogleMap;
@@ -58702,8 +58699,16 @@
 	
 	    render: function render() {
 	
-	        var buses = [];
-	
+	        try {
+	            var keys = [];
+	            for (var k in this.props.data.markers) {
+	                keys.push(k);
+	            }var buses = this.props.data.markers[keys[0]];
+	        } catch (e) {
+	            var buses = [];
+	        } finally {
+	            console.log('Rendered');
+	        }
 	        var busRender = buses.map(function (bus) {
 	            console.log(bus);
 	            return _react2.default.createElement('div', {

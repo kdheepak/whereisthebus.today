@@ -22,8 +22,16 @@ var MyRoute = React.createClass({
 
     render: function() {
 
-        var buses = []
+        try {
+            var keys = [];
+            for(var k in this.props.data.markers) keys.push(k);
 
+            var buses = this.props.data.markers[keys[0]]
+        } catch (e) {
+            var buses = []
+        } finally {
+            console.log('Rendered')
+        }
         var busRender =  buses.map(function(bus) {
                   console.log(bus)
                   return (

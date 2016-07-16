@@ -18,7 +18,7 @@ var MyGoogleMap = React.createClass({
             height: this.props.height,
             googleApiLoaded: false,
             selectedRoute: '',
-            markerData: []
+            data: []
         };
     },
 
@@ -41,8 +41,13 @@ var MyGoogleMap = React.createClass({
                     }
                   }.bind(this))
                   .then(function(json) {
+                        var keys = [];
+                        for(var k in json.markers) keys.push(k);
+
+                        var buses = json.markers[keys[0]]
+
                         this.setState({
-                            markerData: json
+                            data: buses
                         })
 
                   }.bind(this)).catch(function(ex) {
@@ -51,7 +56,21 @@ var MyGoogleMap = React.createClass({
 
     },
 
+    _onChildClick: function(key, childProps) {
+        console.log(childProps)
+    },
+
     render: function() {
+
+        const RenderBus = this.state.data.map((marker, index) => (
+            <div lat={marker[0]}
+                 lng={marker[1]}
+                 key={marker[10]}
+                 >
+                <div className='pin'></div>
+                <div className='pulse'></div>
+            </div>
+        ))
 
         return (
             <GoogleMap
@@ -60,43 +79,17 @@ var MyGoogleMap = React.createClass({
                 bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
                 center={this.state.center}
                 zoom={this.state.zoom}
-                onGoogleApiLoaded={this.onGoogleApiLoaded}
-                yesIWantToUseGoogleMapApiInternals
+                onChildClick={this._onChildClick}
                 options={this.props.options}>
 
                 <MyCurrentLocation setCurrentLocation={this.props.setCurrentLocation} lat={this.state.center.lat} lng={this.state.center.lng}>
                 </MyCurrentLocation>
 
-
-                <MyRoute data={this.state.markerData}>
-                </MyRoute>
-
+                {RenderBus}
             </GoogleMap>
         );
     },
 
-    onGoogleApiLoaded: function({map, maps}) {
-        this.setState({
-            googleApiLoaded: true
-        });
-
-        const bounds = new maps.LatLngBounds();
-
-        function extendBounds(lat, lng) {
-            const latLng = new maps.LatLng(lat, lng);
-            bounds.extend(latLng);
-        }
-        function extendCoordsBounds(coords) {
-            for (var i = 0; i < coords.length; i++) {
-                if (coords[i].hasOwnProperty('lat') && coords[i].hasOwnProperty('lng')) {
-                    extendBounds(coords[i].lat, coords[i].lng);
-                } else if (Array.isArray(coords[i])) {
-                    extendCoordsBounds(coords[i]);
-                }
-            }
-        }
-
-    }
 })
 
 export default MyGoogleMap;
