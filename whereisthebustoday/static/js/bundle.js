@@ -55718,6 +55718,25 @@
 	var DEFAULT_REF = 'map';
 	var DEFAULT_HEIGHT = '100%';
 	
+	function createMapOptions(maps) {
+	    // next props are exposed at maps
+	    // "Animation", "ControlPosition", "MapTypeControlStyle", "MapTypeId",
+	    // "NavigationControlStyle", "ScaleControlStyle", "StrokePosition", "SymbolPath", "ZoomControlStyle",
+	    // "DirectionsStatus", "DirectionsTravelMode", "DirectionsUnitSystem", "DistanceMatrixStatus",
+	    // "DistanceMatrixElementStatus", "ElevationStatus", "GeocoderLocationType", "GeocoderStatus", "KmlLayerStatus",
+	    // "MaxZoomStatus", "StreetViewStatus", "TransitMode", "TransitRoutePreference", "TravelMode", "UnitSystem"
+	    return {
+	        zoomControlOptions: {
+	            position: maps.ControlPosition.RIGHT_CENTER,
+	            style: maps.ZoomControlStyle.SMALL
+	        },
+	        mapTypeControlOptions: {
+	            position: maps.ControlPosition.TOP_RIGHT
+	        },
+	        mapTypeControl: true
+	    };
+	}
+	
 	var MyGoogleMap = _react2.default.createClass({
 	    displayName: 'MyGoogleMap',
 	
@@ -55791,7 +55810,7 @@
 	                center: this.state.center,
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
-	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
+	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onChildClick', this._onChildClick), _defineProperty(_React$createElement, 'options', createMapOptions), _React$createElement),
 	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.state.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
 	            RenderBus
 	        );

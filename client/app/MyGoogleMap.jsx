@@ -7,6 +7,26 @@ import MyRoute from './MyRoute.jsx';
 const DEFAULT_REF = 'map';
 const DEFAULT_HEIGHT = '100%';
 
+function createMapOptions(maps) {
+  // next props are exposed at maps
+  // "Animation", "ControlPosition", "MapTypeControlStyle", "MapTypeId",
+  // "NavigationControlStyle", "ScaleControlStyle", "StrokePosition", "SymbolPath", "ZoomControlStyle",
+  // "DirectionsStatus", "DirectionsTravelMode", "DirectionsUnitSystem", "DistanceMatrixStatus",
+  // "DistanceMatrixElementStatus", "ElevationStatus", "GeocoderLocationType", "GeocoderStatus", "KmlLayerStatus",
+  // "MaxZoomStatus", "StreetViewStatus", "TransitMode", "TransitRoutePreference", "TravelMode", "UnitSystem"
+  return {
+    zoomControlOptions: {
+      position: maps.ControlPosition.RIGHT_CENTER,
+      style: maps.ZoomControlStyle.SMALL
+    },
+    mapTypeControlOptions: {
+      position: maps.ControlPosition.TOP_RIGHT
+    },
+    mapTypeControl: true
+  };
+}
+
+
 var MyGoogleMap = React.createClass({
 
     getInitialState: function() {
@@ -82,7 +102,8 @@ var MyGoogleMap = React.createClass({
                 center={this.state.center}
                 zoom={this.state.zoom}
                 onChildClick={this._onChildClick}
-                options={this.props.options}>
+                options={createMapOptions}
+                >
 
                 <MyCurrentLocation setCurrentLocation={this.state.setCurrentLocation} lat={this.state.center.lat} lng={this.state.center.lng}>
                 </MyCurrentLocation>
