@@ -24,15 +24,16 @@ const App = React.createClass({
                 }.bind(this));
         }
         catch(err) {
+            console.log('Cannot get location')
             console.log(err.message);
         }
 
     fetch('/api/routes')
               .then(function(response) {
-                console.log(response.headers.get('Content-Type'))
-                console.log(response.headers.get('Date'))
-                console.log(response.status)
-                console.log(response.statusText)
+                // console.log(response.headers.get('Content-Type'))
+                // console.log(response.headers.get('Date'))
+                // console.log(response.status)
+                // console.log(response.statusText)
                 if (response.status == 200){
                             return response.json();
                           }
@@ -125,6 +126,7 @@ const App = React.createClass({
                center={{lat: this.state.lat, lng: this.state.lng}}
                zoom={14}
                selectedRoute={this.state.selectedRoute}
+               setCurrentLocation={this.state.setCurrentLocation}
                >
              </MyGoogleMap>
           </div>

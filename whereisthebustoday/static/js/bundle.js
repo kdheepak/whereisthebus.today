@@ -541,14 +541,15 @@
 	                });
 	            }.bind(this));
 	        } catch (err) {
+	            console.log('Cannot get location');
 	            console.log(err.message);
 	        }
 	
 	        fetch('/api/routes').then(function (response) {
-	            console.log(response.headers.get('Content-Type'));
-	            console.log(response.headers.get('Date'));
-	            console.log(response.status);
-	            console.log(response.statusText);
+	            // console.log(response.headers.get('Content-Type'))
+	            // console.log(response.headers.get('Date'))
+	            // console.log(response.status)
+	            // console.log(response.statusText)
 	            if (response.status == 200) {
 	                return response.json();
 	            } else {
@@ -635,7 +636,8 @@
 	                _react2.default.createElement(_MyGoogleMap2.default, {
 	                    center: { lat: this.state.lat, lng: this.state.lng },
 	                    zoom: 14,
-	                    selectedRoute: this.state.selectedRoute
+	                    selectedRoute: this.state.selectedRoute,
+	                    setCurrentLocation: this.state.setCurrentLocation
 	                })
 	            )
 	        );
@@ -55777,7 +55779,7 @@
 	                zoom: this.state.zoom,
 	                bootstrapURLKeys: { key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU' }
 	            }, _defineProperty(_React$createElement, 'center', this.state.center), _defineProperty(_React$createElement, 'zoom', this.state.zoom), _defineProperty(_React$createElement, 'onGoogleApiLoaded', this.onGoogleApiLoaded), _defineProperty(_React$createElement, 'yesIWantToUseGoogleMapApiInternals', true), _defineProperty(_React$createElement, 'options', this.props.options), _React$createElement),
-	            this.state.setCurrentLocation ? _react2.default.createElement(_MyCurrentLocation2.default, { lat: this.state.center.lat, lng: this.state.center.lng }) : _react2.default.createElement('div', null),
+	            _react2.default.createElement(_MyCurrentLocation2.default, { setCurrentLocation: this.props.setCurrentLocation, lat: this.state.center.lat, lng: this.state.center.lng }),
 	            _react2.default.createElement(_MyRoute2.default, { data: this.state.markerData })
 	        );
 	    },
@@ -58638,20 +58640,24 @@
 	
 	
 	    render: function render() {
-	        return _react2.default.createElement('div', { style: {
-	                position: 'absolute',
-	                width: 10,
-	                height: 10,
-	                left: -20 / 2,
-	                top: -20 / 2,
-	                border: '5px solid white',
-	                borderRadius: 20,
-	                backgroundColor: 'blue',
-	                textAlign: 'center',
-	                fontSize: 16,
-	                fontWeight: 'bold',
-	                padding: 4
-	            }, lat: this.props.lat, lng: this.props.lng });
+	        return _react2.default.createElement(
+	            'div',
+	            null,
+	            this.props.setCurrentLocation ? _react2.default.createElement('div', { style: {
+	                    position: 'absolute',
+	                    width: 10,
+	                    height: 10,
+	                    left: -20 / 2,
+	                    top: -20 / 2,
+	                    border: '5px solid white',
+	                    borderRadius: 20,
+	                    backgroundColor: 'blue',
+	                    textAlign: 'center',
+	                    fontSize: 16,
+	                    fontWeight: 'bold',
+	                    padding: 4
+	                }, lat: this.props.lat, lng: this.props.lng }) : _react2.default.createElement('div', null)
+	        );
 	    }
 	
 	});
