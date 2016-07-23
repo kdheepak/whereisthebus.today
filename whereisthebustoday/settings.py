@@ -16,6 +16,8 @@ class Config(object):
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    # you can set key as config
+    GOOGLEMAPS_KEY = "AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU"
 
 
 class ProdConfig(Config):

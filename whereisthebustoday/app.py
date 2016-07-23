@@ -3,7 +3,7 @@
 from flask import Flask, render_template
 
 from whereisthebustoday import public, user, api
-from whereisthebustoday.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
+from whereisthebustoday.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, googlemaps
 from whereisthebustoday.settings import ProdConfig
 
 
@@ -29,6 +29,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
+    googlemaps.init_app(app)
     return None
 
 
@@ -50,4 +51,3 @@ def register_errorhandlers(app):
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
     return None
-

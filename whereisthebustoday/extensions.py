@@ -7,6 +7,8 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 
 bcrypt = Bcrypt()
 csrf_protect = CsrfProtect()
@@ -15,4 +17,4 @@ db = SQLAlchemy()
 migrate = Migrate()
 cache = Cache()
 debug_toolbar = DebugToolbarExtension()
-
+googlemaps = GoogleMaps()
