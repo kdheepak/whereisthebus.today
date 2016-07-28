@@ -104,9 +104,7 @@ const App = React.createClass({
 
           <div id="map-canvas" style={{width: '100%', height: '100vh'}}>
               <MyGoogleMap
-               zoom={14}
-               selectedRoute={this.state.selectedRoute}
-               setCurrentLocation={this.state.setCurrentLocation}
+                routes={this.state.selectedRoute}
                >
              </MyGoogleMap>
           </div>

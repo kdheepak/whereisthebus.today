@@ -520,7 +520,7 @@
 	
 	var _MyGoogleMap2 = _interopRequireDefault(_MyGoogleMap);
 	
-	var _MySelectMenu = __webpack_require__(/*! ./MySelectMenu.jsx */ 563);
+	var _MySelectMenu = __webpack_require__(/*! ./MySelectMenu.jsx */ 516);
 	
 	var _MySelectMenu2 = _interopRequireDefault(_MySelectMenu);
 	
@@ -611,9 +611,7 @@
 	        'div',
 	        { id: 'map-canvas', style: { width: '100%', height: '100vh' } },
 	        _react2.default.createElement(_MyGoogleMap2.default, {
-	          zoom: 14,
-	          selectedRoute: this.state.selectedRoute,
-	          setCurrentLocation: this.state.setCurrentLocation
+	          routes: this.state.selectedRoute
 	        })
 	      )
 	    );
@@ -27106,7 +27104,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -55678,130 +55676,239 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactGoogleMaps = __webpack_require__(/*! react-google-maps */ 517);
+	
+	var _MyCurrentLocation = __webpack_require__(/*! ./MyCurrentLocation.jsx */ 562);
+	
+	var _MyCurrentLocation2 = _interopRequireDefault(_MyCurrentLocation);
+	
+	var _MyRoute = __webpack_require__(/*! ./MyRoute.jsx */ 563);
+	
+	var _MyRoute2 = _interopRequireDefault(_MyRoute);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var DEFAULT_REF = 'map';
+	var DEFAULT_HEIGHT = '100%';
+	
+	var image = new google.maps.MarkerImage('/static/img/bus.png', null, null, null, new google.maps.Size(32, 32));
+	
+	var MyGoogleMap = function (_React$Component) {
+	    _inherits(MyGoogleMap, _React$Component);
+	
+	    function MyGoogleMap(props, context) {
+	        _classCallCheck(this, MyGoogleMap);
+	
+	        // initial state
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MyGoogleMap).call(this, props, context));
+	
+	        _this.state = {
+	            routes: _this.props.routes,
+	            zoom: 14,
+	            coords: {
+	                lat: 39.7433,
+	                lng: -104.9891
+	            }
+	        };
+	        return _this;
+	    }
+	
+	    _createClass(MyGoogleMap, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'GMap', style: { width: '100%', height: '100vh' } },
+	                _react2.default.createElement('div', { className: 'GMap-canvas', ref: 'mapCanvas', style: { width: '100%', height: '100vh' } })
+	            );
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var _this2 = this;
+	
+	            // create the map, marker and infoWindow after the component has
+	            // been rendered because we need to manipulate the DOM for Google =(
+	            this.map = this.createMap();
+	
+	            // have to define google maps event listeners here too
+	            // because we can't add listeners on the map until its created
+	            google.maps.event.addListener(this.map, 'zoom_changed', function () {
+	                return _this2.handleZoomChange();
+	            });
+	
+	            navigator.geolocation.getCurrentPosition(function (loc) {
+	                this.setState({
+	                    coords: {
+	                        lat: loc.coords.latitude,
+	                        lng: loc.coords.longitude,
+	                        acc: loc.coords.accuracy
+	                    }
+	                });
+	            }.bind(this));
+	        }
+	    }, {
+	        key: 'componentWillUpdate',
+	        value: function componentWillUpdate(nextProps, nextState) {
+	            if (!(this.state.data === nextState.data)) {
+	                for (var i = 0; i < nextState.data.length; i++) {
+	                    var bus = nextState.data[i];
+	                    var marker = new google.maps.Marker({
+	                        position: { lat: bus[0], lng: bus[1] },
+	                        map: this.map,
+	                        title: bus[2],
+	                        icon: image,
+	                        optimized: false
+	                    });
+	                }
+	            }
+	
+	            if (!(nextState.coords.lat === this.state.coords.lat && nextState.coords.lng === this.state.coords.lng)) {
+	                // Location has changed
+	                try {
+	                    this.marker.setMap(null);
+	                } catch (err) {
+	                    console.log('Marker does not exist');
+	                }
+	
+	                this.marker = new google.maps.Marker({
+	                    position: new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng),
+	                    animation: google.maps.Animation.DROP,
+	                    map: this.map
+	                });
+	
+	                this.map.setCenter(new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng));
+	            }
+	
+	            if (!(this.props.routes === nextProps.routes)) {
+	                // selectedRoute has changed
+	
+	                fetch('/api/markers/' + nextProps.routes).then(function (response) {
+	                    // console.log(response.headers.get('Content-Type'))
+	                    // console.log(response.headers.get('Date'))
+	                    // console.log(response.status)
+	                    // console.log(response.statusText)
+	                    if (response.status == 200) {
+	                        return response.json();
+	                    } else {
+	                        return { markers: {}, routePaths: {} };
+	                    }
+	                }.bind(this)).then(function (json) {
+	                    var keys = [];
+	                    for (var k in json.markers) {
+	                        keys.push(k);
+	                    }var buses = json.markers[keys[0]];
+	
+	                    this.setState({
+	                        data: buses
+	                    });
+	                }.bind(this)).catch(function (ex) {
+	                    console.log('parsing failed', ex);
+	                });
+	            }
+	        }
+	
+	        // clean up event listeners when component unmounts
+	
+	    }, {
+	        key: 'componentDidUnMount',
+	        value: function componentDidUnMount() {
+	            google.maps.event.clearListeners(map, 'zoom_changed');
+	        }
+	    }, {
+	        key: 'createMap',
+	        value: function createMap() {
+	            var mapOptions = {
+	                zoom: this.state.zoom,
+	                center: new google.maps.LatLng(this.state.coords.lat, this.state.coords.lng)
+	            };
+	            return new google.maps.Map(this.refs.mapCanvas, mapOptions);
+	        }
+	    }, {
+	        key: 'handleZoomChange',
+	        value: function handleZoomChange() {
+	            this.setState({
+	                zoom: this.map.getZoom()
+	            });
+	        }
+	    }]);
+	
+	    return MyGoogleMap;
+	}(_react2.default.Component);
+	
+	exports.default = MyGoogleMap;
+
+/***/ },
+/* 516 */
+/*!*************************************!*\
+  !*** ./client/app/MySelectMenu.jsx ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
 	});
 	
 	var _react = __webpack_require__(/*! react */ 3);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reactGoogleMaps = __webpack_require__(/*! react-google-maps */ 516);
-	
-	var _MyCurrentLocation = __webpack_require__(/*! ./MyCurrentLocation.jsx */ 561);
-	
-	var _MyCurrentLocation2 = _interopRequireDefault(_MyCurrentLocation);
-	
-	var _MyRoute = __webpack_require__(/*! ./MyRoute.jsx */ 562);
-	
-	var _MyRoute2 = _interopRequireDefault(_MyRoute);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var DEFAULT_REF = 'map';
-	var DEFAULT_HEIGHT = '100%';
+	var MySelectMenu = _react2.default.createClass({
+	    displayName: "MySelectMenu",
 	
-	function createMapOptions(maps) {
-	  // next props are exposed at maps
-	  // "Animation", "ControlPosition", "MapTypeControlStyle", "MapTypeId",
-	  // "NavigationControlStyle", "ScaleControlStyle", "StrokePosition", "SymbolPath", "ZoomControlStyle",
-	  // "DirectionsStatus", "DirectionsTravelMode", "DirectionsUnitSystem", "DistanceMatrixStatus",
-	  // "DistanceMatrixElementStatus", "ElevationStatus", "GeocoderLocationType", "GeocoderStatus", "KmlLayerStatus",
-	  // "MaxZoomStatus", "StreetViewStatus", "TransitMode", "TransitRoutePreference", "TravelMode", "UnitSystem"
-	  return {
-	    zoomControlOptions: {
-	      position: maps.ControlPosition.RIGHT_CENTER,
-	      style: maps.ZoomControlStyle.SMALL
-	    },
-	    mapTypeControlOptions: {
-	      position: maps.ControlPosition.TOP_RIGHT
-	    },
-	    mapTypeControl: true
-	  };
-	}
+	    render: function render() {
 	
-	var MyGoogleMap = _react2.default.createClass({
-	  displayName: 'MyGoogleMap',
-	
-	  componentDidMount: function componentDidMount() {
-	    try {
-	      console.log('Trying to get current location');
-	      navigator.geolocation.getCurrentPosition(function (position) {
-	        console.log(position);
-	        this.setState({
-	          lat: position.coords.latitude,
-	          lng: position.coords.longitude
+	        var optionRender = this.props.routeOptions.map(function (opt) {
+	            return _react2.default.createElement(
+	                "option",
+	                { key: opt.value, value: opt.value },
+	                opt.value
+	            );
 	        });
-	      }.bind(this));
-	    } catch (err) {
-	      console.log('Cannot get location');
-	      console.log(err.message);
+	
+	        return _react2.default.createElement(
+	            "div",
+	            null,
+	            _react2.default.createElement(
+	                "select",
+	                { className: "selectpicker",
+	                    "data-live-search": "true",
+	                    id: "routename",
+	                    onChange: this.props.onChange,
+	                    "data-width": "100%",
+	                    title: "Select Bus Route..."
+	                },
+	                optionRender
+	            )
+	        );
 	    }
-	  },
-	
-	  getInitialState: function getInitialState() {
-	    return {
-	      lat: 0,
-	      lng: 0
-	    };
-	  },
-	
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    this.setState({
-	      selectedRoute: nextProps.selectedRoute,
-	      setCurrentLocation: nextProps.setCurrentLocation
-	    });
-	
-	    fetch('/api/markers/' + nextProps.selectedRoute).then(function (response) {
-	      // console.log(response.headers.get('Content-Type'))
-	      // console.log(response.headers.get('Date'))
-	      // console.log(response.status)
-	      // console.log(response.statusText)
-	      if (response.status == 200) {
-	        return response.json();
-	      } else {
-	        return { markers: {}, routePaths: {} };
-	      }
-	    }.bind(this)).then(function (json) {
-	      var keys = [];
-	      for (var k in json.markers) {
-	        keys.push(k);
-	      }var buses = json.markers[keys[0]];
-	
-	      this.setState({
-	        data: buses
-	      });
-	    }.bind(this)).catch(function (ex) {
-	      console.log('parsing failed', ex);
-	    });
-	  },
-	
-	  render: function render() {
-	
-	    return _react2.default.createElement(
-	      'section',
-	      { style: { height: "100%" } },
-	      _react2.default.createElement(_reactGoogleMaps.GoogleMapLoader, {
-	        containerElement: _react2.default.createElement('div', {
-	          style: {
-	            height: "100%"
-	          }
-	        }),
-	        googleMapElement: _react2.default.createElement(_reactGoogleMaps.GoogleMap, {
-	          ref: function ref(map) {
-	            return console.log(map);
-	          },
-	          defaultZoom: this.props.zoom,
-	          defaultCenter: { lat: this.state.lat, lng: this.state.lng }
-	        })
-	      })
-	    );
-	  }
 	
 	});
-	exports.default = MyGoogleMap;
+	
+	exports.default = MySelectMenu;
 
 /***/ },
-/* 516 */
+/* 517 */
 /*!******************************************!*\
   !*** ./~/react-google-maps/lib/index.js ***!
   \******************************************/
@@ -55815,60 +55922,60 @@
 	
 	function _interopRequire(obj) { return obj && obj.__esModule ? obj["default"] : obj; }
 	
-	var _GoogleMapLoader = __webpack_require__(/*! ./GoogleMapLoader */ 517);
+	var _GoogleMapLoader = __webpack_require__(/*! ./GoogleMapLoader */ 518);
 	
 	exports.GoogleMapLoader = _interopRequire(_GoogleMapLoader);
 	
-	var _GoogleMap = __webpack_require__(/*! ./GoogleMap */ 526);
+	var _GoogleMap = __webpack_require__(/*! ./GoogleMap */ 527);
 	
 	exports.GoogleMap = _interopRequire(_GoogleMap);
 	
-	var _Circle = __webpack_require__(/*! ./Circle */ 527);
+	var _Circle = __webpack_require__(/*! ./Circle */ 528);
 	
 	exports.Circle = _interopRequire(_Circle);
 	
-	var _DirectionsRenderer = __webpack_require__(/*! ./DirectionsRenderer */ 531);
+	var _DirectionsRenderer = __webpack_require__(/*! ./DirectionsRenderer */ 532);
 	
 	exports.DirectionsRenderer = _interopRequire(_DirectionsRenderer);
 	
-	var _DrawingManager = __webpack_require__(/*! ./DrawingManager */ 534);
+	var _DrawingManager = __webpack_require__(/*! ./DrawingManager */ 535);
 	
 	exports.DrawingManager = _interopRequire(_DrawingManager);
 	
-	var _InfoWindow = __webpack_require__(/*! ./InfoWindow */ 537);
+	var _InfoWindow = __webpack_require__(/*! ./InfoWindow */ 538);
 	
 	exports.InfoWindow = _interopRequire(_InfoWindow);
 	
-	var _KmlLayer = __webpack_require__(/*! ./KmlLayer */ 541);
+	var _KmlLayer = __webpack_require__(/*! ./KmlLayer */ 542);
 	
 	exports.KmlLayer = _interopRequire(_KmlLayer);
 	
-	var _Marker = __webpack_require__(/*! ./Marker */ 544);
+	var _Marker = __webpack_require__(/*! ./Marker */ 545);
 	
 	exports.Marker = _interopRequire(_Marker);
 	
-	var _OverlayView = __webpack_require__(/*! ./OverlayView */ 547);
+	var _OverlayView = __webpack_require__(/*! ./OverlayView */ 548);
 	
 	exports.OverlayView = _interopRequire(_OverlayView);
 	
-	var _Polygon = __webpack_require__(/*! ./Polygon */ 549);
+	var _Polygon = __webpack_require__(/*! ./Polygon */ 550);
 	
 	exports.Polygon = _interopRequire(_Polygon);
 	
-	var _Polyline = __webpack_require__(/*! ./Polyline */ 552);
+	var _Polyline = __webpack_require__(/*! ./Polyline */ 553);
 	
 	exports.Polyline = _interopRequire(_Polyline);
 	
-	var _Rectangle = __webpack_require__(/*! ./Rectangle */ 555);
+	var _Rectangle = __webpack_require__(/*! ./Rectangle */ 556);
 	
 	exports.Rectangle = _interopRequire(_Rectangle);
 	
-	var _SearchBox = __webpack_require__(/*! ./SearchBox */ 558);
+	var _SearchBox = __webpack_require__(/*! ./SearchBox */ 559);
 	
 	exports.SearchBox = _interopRequire(_SearchBox);
 
 /***/ },
-/* 517 */
+/* 518 */
 /*!****************************************************!*\
   !*** ./~/react-google-maps/lib/GoogleMapLoader.js ***!
   \****************************************************/
@@ -55896,7 +56003,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _creatorsGoogleMapHolder = __webpack_require__(/*! ./creators/GoogleMapHolder */ 518);
+	var _creatorsGoogleMapHolder = __webpack_require__(/*! ./creators/GoogleMapHolder */ 519);
 	
 	var _creatorsGoogleMapHolder2 = _interopRequireDefault(_creatorsGoogleMapHolder);
 	
@@ -55983,7 +56090,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 518 */
+/* 519 */
 /*!*************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/GoogleMapHolder.js ***!
   \*************************************************************/
@@ -56013,23 +56120,23 @@
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _eventListsGoogleMapEventList = __webpack_require__(/*! ../eventLists/GoogleMapEventList */ 519);
+	var _eventListsGoogleMapEventList = __webpack_require__(/*! ../eventLists/GoogleMapEventList */ 520);
 	
 	var _eventListsGoogleMapEventList2 = _interopRequireDefault(_eventListsGoogleMapEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
@@ -56146,7 +56253,7 @@
 	exports["default"] = GoogleMapHolder;
 
 /***/ },
-/* 519 */
+/* 520 */
 /*!******************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/GoogleMapEventList.js ***!
   \******************************************************************/
@@ -56163,7 +56270,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 520 */
+/* 521 */
 /*!**************************************************************!*\
   !*** ./~/react-google-maps/lib/utils/eventHandlerCreator.js ***!
   \**************************************************************/
@@ -56218,7 +56325,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 521 */
+/* 522 */
 /*!**************************************************************!*\
   !*** ./~/react-google-maps/lib/utils/defaultPropsCreator.js ***!
   \**************************************************************/
@@ -56233,7 +56340,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	var _addDefaultPrefix = __webpack_require__(/*! ./addDefaultPrefix */ 522);
+	var _addDefaultPrefix = __webpack_require__(/*! ./addDefaultPrefix */ 523);
 	
 	var _addDefaultPrefix2 = _interopRequireDefault(_addDefaultPrefix);
 	
@@ -56247,7 +56354,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 522 */
+/* 523 */
 /*!***********************************************************!*\
   !*** ./~/react-google-maps/lib/utils/addDefaultPrefix.js ***!
   \***********************************************************/
@@ -56267,7 +56374,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 523 */
+/* 524 */
 /*!*********************************************************!*\
   !*** ./~/react-google-maps/lib/utils/composeOptions.js ***!
   \*********************************************************/
@@ -56285,7 +56392,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	var _controlledOrDefault = __webpack_require__(/*! ./controlledOrDefault */ 524);
+	var _controlledOrDefault = __webpack_require__(/*! ./controlledOrDefault */ 525);
 	
 	var _controlledOrDefault2 = _interopRequireDefault(_controlledOrDefault);
 	
@@ -56309,7 +56416,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 524 */
+/* 525 */
 /*!**************************************************************!*\
   !*** ./~/react-google-maps/lib/utils/controlledOrDefault.js ***!
   \**************************************************************/
@@ -56324,7 +56431,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	var _addDefaultPrefix = __webpack_require__(/*! ./addDefaultPrefix */ 522);
+	var _addDefaultPrefix = __webpack_require__(/*! ./addDefaultPrefix */ 523);
 	
 	var _addDefaultPrefix2 = _interopRequireDefault(_addDefaultPrefix);
 	
@@ -56341,7 +56448,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 525 */
+/* 526 */
 /*!**********************************************************************!*\
   !*** ./~/react-google-maps/lib/utils/componentLifecycleDecorator.js ***!
   \**********************************************************************/
@@ -56434,7 +56541,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 526 */
+/* 527 */
 /*!**********************************************!*\
   !*** ./~/react-google-maps/lib/GoogleMap.js ***!
   \**********************************************/
@@ -56468,11 +56575,11 @@
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _creatorsGoogleMapHolder = __webpack_require__(/*! ./creators/GoogleMapHolder */ 518);
+	var _creatorsGoogleMapHolder = __webpack_require__(/*! ./creators/GoogleMapHolder */ 519);
 	
 	var _creatorsGoogleMapHolder2 = _interopRequireDefault(_creatorsGoogleMapHolder);
 	
-	var _GoogleMapLoader = __webpack_require__(/*! ./GoogleMapLoader */ 517);
+	var _GoogleMapLoader = __webpack_require__(/*! ./GoogleMapLoader */ 518);
 	
 	var _GoogleMapLoader2 = _interopRequireDefault(_GoogleMapLoader);
 	
@@ -56639,7 +56746,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 527 */
+/* 528 */
 /*!*******************************************!*\
   !*** ./~/react-google-maps/lib/Circle.js ***!
   \*******************************************/
@@ -56667,11 +56774,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsCircleCreator = __webpack_require__(/*! ./creators/CircleCreator */ 529);
+	var _creatorsCircleCreator = __webpack_require__(/*! ./creators/CircleCreator */ 530);
 	
 	var _creatorsCircleCreator2 = _interopRequireDefault(_creatorsCircleCreator);
 	
@@ -56774,7 +56881,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 528 */
+/* 529 */
 /*!********************************!*\
   !*** ./~/can-use-dom/index.js ***!
   \********************************/
@@ -56789,7 +56896,7 @@
 	module.exports = canUseDOM;
 
 /***/ },
-/* 529 */
+/* 530 */
 /*!***********************************************************!*\
   !*** ./~/react-google-maps/lib/creators/CircleCreator.js ***!
   \***********************************************************/
@@ -56815,27 +56922,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsCircleEventList = __webpack_require__(/*! ../eventLists/CircleEventList */ 530);
+	var _eventListsCircleEventList = __webpack_require__(/*! ../eventLists/CircleEventList */ 531);
 	
 	var _eventListsCircleEventList2 = _interopRequireDefault(_eventListsCircleEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -56940,7 +57047,7 @@
 	exports["default"] = CircleCreator;
 
 /***/ },
-/* 530 */
+/* 531 */
 /*!***************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/CircleEventList.js ***!
   \***************************************************************/
@@ -56957,7 +57064,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 531 */
+/* 532 */
 /*!*******************************************************!*\
   !*** ./~/react-google-maps/lib/DirectionsRenderer.js ***!
   \*******************************************************/
@@ -56985,11 +57092,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsDirectionsRendererCreator = __webpack_require__(/*! ./creators/DirectionsRendererCreator */ 532);
+	var _creatorsDirectionsRendererCreator = __webpack_require__(/*! ./creators/DirectionsRendererCreator */ 533);
 	
 	var _creatorsDirectionsRendererCreator2 = _interopRequireDefault(_creatorsDirectionsRendererCreator);
 	
@@ -57077,7 +57184,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 532 */
+/* 533 */
 /*!***********************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/DirectionsRendererCreator.js ***!
   \***********************************************************************/
@@ -57103,27 +57210,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsDirectionsRendererEventList = __webpack_require__(/*! ../eventLists/DirectionsRendererEventList */ 533);
+	var _eventListsDirectionsRendererEventList = __webpack_require__(/*! ../eventLists/DirectionsRendererEventList */ 534);
 	
 	var _eventListsDirectionsRendererEventList2 = _interopRequireDefault(_eventListsDirectionsRendererEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -57231,7 +57338,7 @@
 	exports["default"] = DirectionsRendererCreator;
 
 /***/ },
-/* 533 */
+/* 534 */
 /*!***************************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/DirectionsRendererEventList.js ***!
   \***************************************************************************/
@@ -57248,7 +57355,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 534 */
+/* 535 */
 /*!***************************************************!*\
   !*** ./~/react-google-maps/lib/DrawingManager.js ***!
   \***************************************************/
@@ -57276,11 +57383,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsDrawingManagerCreator = __webpack_require__(/*! ./creators/DrawingManagerCreator */ 535);
+	var _creatorsDrawingManagerCreator = __webpack_require__(/*! ./creators/DrawingManagerCreator */ 536);
 	
 	var _creatorsDrawingManagerCreator2 = _interopRequireDefault(_creatorsDrawingManagerCreator);
 	
@@ -57358,7 +57465,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 535 */
+/* 536 */
 /*!*******************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/DrawingManagerCreator.js ***!
   \*******************************************************************/
@@ -57384,27 +57491,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsDrawingManagerEventList = __webpack_require__(/*! ../eventLists/DrawingManagerEventList */ 536);
+	var _eventListsDrawingManagerEventList = __webpack_require__(/*! ../eventLists/DrawingManagerEventList */ 537);
 	
 	var _eventListsDrawingManagerEventList2 = _interopRequireDefault(_eventListsDrawingManagerEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -57493,7 +57600,7 @@
 	exports["default"] = DrawingManagerCreator;
 
 /***/ },
-/* 536 */
+/* 537 */
 /*!***********************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/DrawingManagerEventList.js ***!
   \***********************************************************************/
@@ -57510,7 +57617,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 537 */
+/* 538 */
 /*!***********************************************!*\
   !*** ./~/react-google-maps/lib/InfoWindow.js ***!
   \***********************************************/
@@ -57538,11 +57645,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsInfoWindowCreator = __webpack_require__(/*! ./creators/InfoWindowCreator */ 538);
+	var _creatorsInfoWindowCreator = __webpack_require__(/*! ./creators/InfoWindowCreator */ 539);
 	
 	var _creatorsInfoWindowCreator2 = _interopRequireDefault(_creatorsInfoWindowCreator);
 	
@@ -57623,7 +57730,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 538 */
+/* 539 */
 /*!***************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/InfoWindowCreator.js ***!
   \***************************************************************/
@@ -57649,31 +57756,31 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsInfoWindowEventList = __webpack_require__(/*! ../eventLists/InfoWindowEventList */ 539);
+	var _eventListsInfoWindowEventList = __webpack_require__(/*! ../eventLists/InfoWindowEventList */ 540);
 	
 	var _eventListsInfoWindowEventList2 = _interopRequireDefault(_eventListsInfoWindowEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsSetContentForOptionalReactElement = __webpack_require__(/*! ../utils/setContentForOptionalReactElement */ 540);
+	var _utilsSetContentForOptionalReactElement = __webpack_require__(/*! ../utils/setContentForOptionalReactElement */ 541);
 	
 	var _utilsSetContentForOptionalReactElement2 = _interopRequireDefault(_utilsSetContentForOptionalReactElement);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -57783,7 +57890,7 @@
 	exports["default"] = InfoWindowCreator;
 
 /***/ },
-/* 539 */
+/* 540 */
 /*!*******************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/InfoWindowEventList.js ***!
   \*******************************************************************/
@@ -57800,7 +57907,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 540 */
+/* 541 */
 /*!****************************************************************************!*\
   !*** ./~/react-google-maps/lib/utils/setContentForOptionalReactElement.js ***!
   \****************************************************************************/
@@ -57846,7 +57953,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 541 */
+/* 542 */
 /*!*********************************************!*\
   !*** ./~/react-google-maps/lib/KmlLayer.js ***!
   \*********************************************/
@@ -57874,11 +57981,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsKmlLayerCreator = __webpack_require__(/*! ./creators/KmlLayerCreator */ 542);
+	var _creatorsKmlLayerCreator = __webpack_require__(/*! ./creators/KmlLayerCreator */ 543);
 	
 	var _creatorsKmlLayerCreator2 = _interopRequireDefault(_creatorsKmlLayerCreator);
 	
@@ -57971,7 +58078,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 542 */
+/* 543 */
 /*!*************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/KmlLayerCreator.js ***!
   \*************************************************************/
@@ -57997,27 +58104,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsKmlLayerEventList = __webpack_require__(/*! ../eventLists/KmlLayerEventList */ 543);
+	var _eventListsKmlLayerEventList = __webpack_require__(/*! ../eventLists/KmlLayerEventList */ 544);
 	
 	var _eventListsKmlLayerEventList2 = _interopRequireDefault(_eventListsKmlLayerEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -58134,7 +58241,7 @@
 	exports["default"] = KmlLayerCreator;
 
 /***/ },
-/* 543 */
+/* 544 */
 /*!*****************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/KmlLayerEventList.js ***!
   \*****************************************************************/
@@ -58151,7 +58258,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 544 */
+/* 545 */
 /*!*******************************************!*\
   !*** ./~/react-google-maps/lib/Marker.js ***!
   \*******************************************/
@@ -58179,11 +58286,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsMarkerCreator = __webpack_require__(/*! ./creators/MarkerCreator */ 545);
+	var _creatorsMarkerCreator = __webpack_require__(/*! ./creators/MarkerCreator */ 546);
 	
 	var _creatorsMarkerCreator2 = _interopRequireDefault(_creatorsMarkerCreator);
 	
@@ -58337,7 +58444,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 545 */
+/* 546 */
 /*!***********************************************************!*\
   !*** ./~/react-google-maps/lib/creators/MarkerCreator.js ***!
   \***********************************************************/
@@ -58363,27 +58470,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsMarkerEventList = __webpack_require__(/*! ../eventLists/MarkerEventList */ 546);
+	var _eventListsMarkerEventList = __webpack_require__(/*! ../eventLists/MarkerEventList */ 547);
 	
 	var _eventListsMarkerEventList2 = _interopRequireDefault(_eventListsMarkerEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -58558,7 +58665,7 @@
 	exports["default"] = MarkerCreator;
 
 /***/ },
-/* 546 */
+/* 547 */
 /*!***************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/MarkerEventList.js ***!
   \***************************************************************/
@@ -58575,7 +58682,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 547 */
+/* 548 */
 /*!************************************************!*\
   !*** ./~/react-google-maps/lib/OverlayView.js ***!
   \************************************************/
@@ -58603,11 +58710,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsOverlayViewCreator = __webpack_require__(/*! ./creators/OverlayViewCreator */ 548);
+	var _creatorsOverlayViewCreator = __webpack_require__(/*! ./creators/OverlayViewCreator */ 549);
 	
 	var _creatorsOverlayViewCreator2 = _interopRequireDefault(_creatorsOverlayViewCreator);
 	
@@ -58714,7 +58821,7 @@
 	// Controlled [props] - used in componentDidMount/componentDidUpdate
 
 /***/ },
-/* 548 */
+/* 549 */
 /*!****************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/OverlayViewCreator.js ***!
   \****************************************************************/
@@ -58746,15 +58853,15 @@
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -58969,7 +59076,7 @@
 	exports["default"] = OverlayViewCreator;
 
 /***/ },
-/* 549 */
+/* 550 */
 /*!********************************************!*\
   !*** ./~/react-google-maps/lib/Polygon.js ***!
   \********************************************/
@@ -58997,11 +59104,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsPolygonCreator = __webpack_require__(/*! ./creators/PolygonCreator */ 550);
+	var _creatorsPolygonCreator = __webpack_require__(/*! ./creators/PolygonCreator */ 551);
 	
 	var _creatorsPolygonCreator2 = _interopRequireDefault(_creatorsPolygonCreator);
 	
@@ -59094,7 +59201,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 550 */
+/* 551 */
 /*!************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/PolygonCreator.js ***!
   \************************************************************/
@@ -59120,27 +59227,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsPolygonEventList = __webpack_require__(/*! ../eventLists/PolygonEventList */ 551);
+	var _eventListsPolygonEventList = __webpack_require__(/*! ../eventLists/PolygonEventList */ 552);
 	
 	var _eventListsPolygonEventList2 = _interopRequireDefault(_eventListsPolygonEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -59245,7 +59352,7 @@
 	exports["default"] = PolygonCreator;
 
 /***/ },
-/* 551 */
+/* 552 */
 /*!****************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/PolygonEventList.js ***!
   \****************************************************************/
@@ -59262,7 +59369,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 552 */
+/* 553 */
 /*!*********************************************!*\
   !*** ./~/react-google-maps/lib/Polyline.js ***!
   \*********************************************/
@@ -59290,11 +59397,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsPolylineCreator = __webpack_require__(/*! ./creators/PolylineCreator */ 553);
+	var _creatorsPolylineCreator = __webpack_require__(/*! ./creators/PolylineCreator */ 554);
 	
 	var _creatorsPolylineCreator2 = _interopRequireDefault(_creatorsPolylineCreator);
 	
@@ -59382,7 +59489,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 553 */
+/* 554 */
 /*!*************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/PolylineCreator.js ***!
   \*************************************************************/
@@ -59408,27 +59515,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsPolylineEventList = __webpack_require__(/*! ../eventLists/PolylineEventList */ 554);
+	var _eventListsPolylineEventList = __webpack_require__(/*! ../eventLists/PolylineEventList */ 555);
 	
 	var _eventListsPolylineEventList2 = _interopRequireDefault(_eventListsPolylineEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -59529,7 +59636,7 @@
 	exports["default"] = PolylineCreator;
 
 /***/ },
-/* 554 */
+/* 555 */
 /*!*****************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/PolylineEventList.js ***!
   \*****************************************************************/
@@ -59546,7 +59653,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 555 */
+/* 556 */
 /*!**********************************************!*\
   !*** ./~/react-google-maps/lib/Rectangle.js ***!
   \**********************************************/
@@ -59574,11 +59681,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsRectangleCreator = __webpack_require__(/*! ./creators/RectangleCreator */ 556);
+	var _creatorsRectangleCreator = __webpack_require__(/*! ./creators/RectangleCreator */ 557);
 	
 	var _creatorsRectangleCreator2 = _interopRequireDefault(_creatorsRectangleCreator);
 	
@@ -59671,7 +59778,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 556 */
+/* 557 */
 /*!**************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/RectangleCreator.js ***!
   \**************************************************************/
@@ -59697,27 +59804,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsRectangleEventList = __webpack_require__(/*! ../eventLists/RectangleEventList */ 557);
+	var _eventListsRectangleEventList = __webpack_require__(/*! ../eventLists/RectangleEventList */ 558);
 	
 	var _eventListsRectangleEventList2 = _interopRequireDefault(_eventListsRectangleEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -59818,7 +59925,7 @@
 	exports["default"] = RectangleCreator;
 
 /***/ },
-/* 557 */
+/* 558 */
 /*!******************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/RectangleEventList.js ***!
   \******************************************************************/
@@ -59835,7 +59942,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 558 */
+/* 559 */
 /*!**********************************************!*\
   !*** ./~/react-google-maps/lib/SearchBox.js ***!
   \**********************************************/
@@ -59865,11 +59972,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _canUseDom = __webpack_require__(/*! can-use-dom */ 528);
+	var _canUseDom = __webpack_require__(/*! can-use-dom */ 529);
 	
 	var _canUseDom2 = _interopRequireDefault(_canUseDom);
 	
-	var _creatorsSearchBoxCreator = __webpack_require__(/*! ./creators/SearchBoxCreator */ 559);
+	var _creatorsSearchBoxCreator = __webpack_require__(/*! ./creators/SearchBoxCreator */ 560);
 	
 	var _creatorsSearchBoxCreator2 = _interopRequireDefault(_creatorsSearchBoxCreator);
 	
@@ -59976,7 +60083,7 @@
 	// Event [onEventName]
 
 /***/ },
-/* 559 */
+/* 560 */
 /*!**************************************************************!*\
   !*** ./~/react-google-maps/lib/creators/SearchBoxCreator.js ***!
   \**************************************************************/
@@ -60002,27 +60109,27 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _eventListsSearchBoxEventList = __webpack_require__(/*! ../eventLists/SearchBoxEventList */ 560);
+	var _eventListsSearchBoxEventList = __webpack_require__(/*! ../eventLists/SearchBoxEventList */ 561);
 	
 	var _eventListsSearchBoxEventList2 = _interopRequireDefault(_eventListsSearchBoxEventList);
 	
-	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 520);
+	var _utilsEventHandlerCreator = __webpack_require__(/*! ../utils/eventHandlerCreator */ 521);
 	
 	var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
 	
-	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 521);
+	var _utilsDefaultPropsCreator = __webpack_require__(/*! ../utils/defaultPropsCreator */ 522);
 	
 	var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
 	
-	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 523);
+	var _utilsComposeOptions = __webpack_require__(/*! ../utils/composeOptions */ 524);
 	
 	var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
 	
-	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 525);
+	var _utilsComponentLifecycleDecorator = __webpack_require__(/*! ../utils/componentLifecycleDecorator */ 526);
 	
 	var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
 	
-	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 518);
+	var _GoogleMapHolder = __webpack_require__(/*! ./GoogleMapHolder */ 519);
 	
 	var _GoogleMapHolder2 = _interopRequireDefault(_GoogleMapHolder);
 	
@@ -60136,7 +60243,7 @@
 	exports["default"] = SearchBoxCreator;
 
 /***/ },
-/* 560 */
+/* 561 */
 /*!******************************************************************!*\
   !*** ./~/react-google-maps/lib/eventLists/SearchBoxEventList.js ***!
   \******************************************************************/
@@ -60153,7 +60260,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 561 */
+/* 562 */
 /*!******************************************!*\
   !*** ./client/app/MyCurrentLocation.jsx ***!
   \******************************************/
@@ -60213,7 +60320,7 @@
 	exports.default = MyCurrentLocation;
 
 /***/ },
-/* 562 */
+/* 563 */
 /*!********************************!*\
   !*** ./client/app/MyRoute.jsx ***!
   \********************************/
@@ -60272,59 +60379,6 @@
 	});
 	
 	exports.default = MyRoute;
-
-/***/ },
-/* 563 */
-/*!*************************************!*\
-  !*** ./client/app/MySelectMenu.jsx ***!
-  \*************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _react = __webpack_require__(/*! react */ 3);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var MySelectMenu = _react2.default.createClass({
-	    displayName: "MySelectMenu",
-	
-	    render: function render() {
-	
-	        var optionRender = this.props.routeOptions.map(function (opt) {
-	            return _react2.default.createElement(
-	                "option",
-	                { key: opt.value, value: opt.value },
-	                opt.value
-	            );
-	        });
-	
-	        return _react2.default.createElement(
-	            "div",
-	            null,
-	            _react2.default.createElement(
-	                "select",
-	                { className: "selectpicker",
-	                    "data-live-search": "true",
-	                    id: "routename",
-	                    onChange: this.props.onChange,
-	                    "data-width": "100%",
-	                    title: "Select Bus Route..."
-	                },
-	                optionRender
-	            )
-	        );
-	    }
-	
-	});
-	
-	exports.default = MySelectMenu;
 
 /***/ }
 /******/ ]);
