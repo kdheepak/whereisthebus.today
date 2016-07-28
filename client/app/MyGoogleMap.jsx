@@ -1,5 +1,5 @@
 import React from 'react';
-import GoogleMap from 'google-map-react';
+import {GoogleMapLoader, GoogleMap, Marker} from "react-google-maps";
 
 import MyCurrentLocation from './MyCurrentLocation.jsx';
 import MyRoute from './MyRoute.jsx';
@@ -28,18 +28,27 @@ function createMapOptions(maps) {
 
 
 var MyGoogleMap = React.createClass({
+    componentDidMount: function() {
+        try {
+            console.log('Trying to get current location')
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position)
+                this.setState({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                });
+                }.bind(this));
+        }
+        catch(err) {
+            console.log('Cannot get location')
+            console.log(err.message);
+        }
+    },
 
     getInitialState: function() {
         return {
-            bounds: [],
-            zoom: this.props.zoom,
-            center: this.props.center,
-            coordinates: this.props.coordinates,
-            height: this.props.height,
-            googleApiLoaded: false,
-            selectedRoute: '',
-            data: [],
-            setCurrentLocation: this.props.setCurrentLocation
+            lat: 0,
+            lng: 0
         };
     },
 
@@ -78,45 +87,30 @@ var MyGoogleMap = React.createClass({
 
     },
 
-    _onChildClick: function(key, childProps) {
-        console.log(childProps)
-    },
-
-    _onClick: function(){
-        console.log("clicked on map")
-    },
     render: function() {
 
-        const RenderBus = this.state.data.map((marker, index) => (
-            <div lat={marker[0]}
-                 lng={marker[1]}
-                 key={marker[10]}
-                 >
-                <div className='pin'></div>
-                <div className='pulse'></div>
-            </div>
-        ))
-
         return (
-            <GoogleMap
-                center={this.state.center}
-                zoom={this.state.zoom}
-                bootstrapURLKeys={{key: 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'}}
-                center={this.state.center}
-                zoom={this.state.zoom}
-                onClick={this._onClick}
-                onChildClick={this._onChildClick}
-                options={createMapOptions}
-                >
-
-                <MyCurrentLocation setCurrentLocation={this.state.setCurrentLocation} lat={this.state.center.lat} lng={this.state.center.lng}>
-                </MyCurrentLocation>
-
-                {RenderBus}
-            </GoogleMap>
+            <section style={{height: "100%"}}>
+              <GoogleMapLoader
+                containerElement={
+                  <div
+                    style={{
+                      height: "100%",
+                    }}
+                  />
+                }
+                googleMapElement={
+                  <GoogleMap
+                    ref={(map) => console.log(map)}
+                    defaultZoom={this.props.zoom}
+                    defaultCenter={{ lat: this.state.lat, lng: this.state.lng }}
+                  >
+                  </GoogleMap>
+                }
+              />
+            </section>
         );
     },
 
 })
-
 export default MyGoogleMap;

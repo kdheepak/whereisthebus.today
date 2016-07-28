@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
+import os
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
@@ -30,7 +32,8 @@ def home():
             return redirect(redirect_url)
         else:
             flash_errors(form)
-    return render_template('public/home.html', form=form)
+
+    return render_template('public/home.html', form=form, googlemapskey=os.environ.get('GOOGLEMAPS_KEY', 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'))
 
 
 @blueprint.route('/logout/')

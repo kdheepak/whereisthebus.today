@@ -2,18 +2,14 @@
 {% extends "layout.html" %}
 
 {% block css %}
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/compiled.css') }}">
-
+<script src="https://maps.googleapis.com/maps/api/js?key={{googlemapskey}}" async defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/compiled.css') }}">
 <style media="screen" type="text/css">
-
 html, body {
     height: 100%;
     width: 100%;
 }
-
 </style>
-
 {% endblock %}
 
 {% block body %}

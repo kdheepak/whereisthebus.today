@@ -15,21 +15,7 @@ const coords = {
 const App = React.createClass({
 
     componentDidMount: function() {
-        try {
-            console.log('Trying to get current location')
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log(position)
-                this.setState({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                        setCurrentLocation: true
-                });
-                }.bind(this));
-        }
-        catch(err) {
-            console.log('Cannot get location')
-            console.log(err.message);
-        }
+    console.log('ComponentDidMount')
 
     fetch('/api/routes')
               .then(function(response) {
@@ -118,7 +104,6 @@ const App = React.createClass({
 
           <div id="map-canvas" style={{width: '100%', height: '100vh'}}>
               <MyGoogleMap
-               center={{lat: this.state.lat, lng: this.state.lng}}
                zoom={14}
                selectedRoute={this.state.selectedRoute}
                setCurrentLocation={this.state.setCurrentLocation}
