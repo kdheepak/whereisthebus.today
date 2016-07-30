@@ -102,7 +102,7 @@ const App = React.createClass({
           </MySelectMenu>
 
 
-          <div id="map-canvas" style={{width: '100%', height: '100vh'}}>
+          <div id="map-canvas" style={{width: '100%', height: '90vh'}}>
               <MyGoogleMap
                 routes={this.state.selectedRoute}
                >

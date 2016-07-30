@@ -31,8 +31,8 @@ class MyGoogleMap extends React.Component {
 }
 
   render() {
-  return <div className="GMap" style={{width: '100%', height: '100vh'}}>
-            <div className='GMap-canvas' ref="mapCanvas" style={{width: '100%', height: '100vh'}}>
+  return <div className="GMap" style={{width: '100%', height: '95vh'}}>
+            <div className='GMap-canvas' ref="mapCanvas" style={{width: '100%', height: '95vh'}}>
             </div>
         </div>
 }
