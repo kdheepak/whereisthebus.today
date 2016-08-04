@@ -34,21 +34,6 @@ def get_trips(route_id=None, trip_headsign=None):
         return list(df[(df['route_id'] == str(route_id)) & (df['trip_headsign'] == str(trip_headsign))]['trip_id'])
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def get_gtfs_data(force=False):
     url = 'http://www.rtd-denver.com/GoogleFeeder/google_transit.zip'
     headers_file = 'google_feeder_headers.txt'

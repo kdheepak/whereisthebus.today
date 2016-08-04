@@ -19,8 +19,9 @@ def load_user(user_id):
     return User.get_by_id(int(user_id))
 
 
+@blueprint.route('/<route>', methods=['GET', 'POST'])
 @blueprint.route('/', methods=['GET', 'POST'])
-def home():
+def home(route=None):
     """Home page."""
     form = LoginForm(request.form)
     # Handle logging in
@@ -33,7 +34,13 @@ def home():
         else:
             flash_errors(form)
 
-    return render_template('public/home.html', form=form, googlemapskey=os.environ.get('GOOGLEMAPS_KEY', 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'))
+    if route is None:
+        route = ''
+
+    return render_template('public/home.html',
+        route=route,
+        form=form,
+        googlemapskey=os.environ.get('GOOGLEMAPS_KEY', 'AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU'))
 
 
 @blueprint.route('/logout/')

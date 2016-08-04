@@ -46,6 +46,7 @@ componentDidMount() {
   // because we can't add listeners on the map until its created
     google.maps.event.addListener(this.map, 'zoom_changed', ()=> this.handleZoomChange())
 
+
     navigator.geolocation.getCurrentPosition(function(loc) {
         this.setState({
             coords: {
@@ -56,9 +57,43 @@ componentDidMount() {
         })
     }.bind(this));
 
+    this.minimum_lat = this.state.lat;
+    this.minimum_lng = this.state.lng;
+
+    fetch('/api/markers/'+this.props.routes)
+      .then(function(response) {
+        // console.log(response.headers.get('Content-Type'))
+        // console.log(response.headers.get('Date'))
+        // console.log(response.status)
+        // console.log(response.statusText)
+        if (response.status == 200){
+                    return response.json();
+                  }
+        else {
+          return {markers: {}, routePaths: {}}
+        }
+      }.bind(this))
+      .then(function(json) {
+            var keys = [];
+            for(var k in json.markers) keys.push(k);
+
+            var buses = json.markers[keys[0]]
+
+            this.setState({
+                data: buses
+            })
+
+      }.bind(this)).catch(function(ex) {
+          console.log('parsing failed', ex);
+      })
+
+
 }
 
 componentWillUpdate(nextProps, nextState) {
+
+    this.bounds = new google.maps.LatLngBounds();
+
     if( !(this.state.data === nextState.data) ) {
         for (var i = 0; i < nextState.data.length; i++) {
           var bus = nextState.data[i];
@@ -69,7 +104,12 @@ componentWillUpdate(nextProps, nextState) {
             icon: image,
             optimized: false,
           });
+
+          this.bounds.extend(new google.maps.LatLng(bus[0], bus[1]));
+
       }
+        this.map.fitBounds(this.bounds);
+
     }
 
     if ( !( (nextState.coords.lat === this.state.coords.lat) && (nextState.coords.lng === this.state.coords.lng) ) ) {
@@ -88,6 +128,8 @@ componentWillUpdate(nextProps, nextState) {
         })
 
         this.map.setCenter(new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng));
+
+        this.bounds.extend(new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng));
 
     }
 

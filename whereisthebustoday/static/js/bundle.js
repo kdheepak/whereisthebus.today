@@ -562,7 +562,7 @@
 	    return {
 	      lat: coords.lat,
 	      lng: coords.lng,
-	      selectedRoute: '',
+	      selectedRoute: route,
 	      routeOptions: [],
 	      setCurrentLocation: true
 	    };
@@ -27495,7 +27495,7 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;// Snap.svg 0.4.0
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_LOCAL_MODULE_0__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Snap.svg 0.4.0
 	// 
 	// Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
 	// 
@@ -56204,10 +56204,39 @@
 	                    }
 	                });
 	            }.bind(this));
+	
+	            this.minimum_lat = this.state.lat;
+	            this.minimum_lng = this.state.lng;
+	
+	            fetch('/api/markers/' + this.props.routes).then(function (response) {
+	                // console.log(response.headers.get('Content-Type'))
+	                // console.log(response.headers.get('Date'))
+	                // console.log(response.status)
+	                // console.log(response.statusText)
+	                if (response.status == 200) {
+	                    return response.json();
+	                } else {
+	                    return { markers: {}, routePaths: {} };
+	                }
+	            }.bind(this)).then(function (json) {
+	                var keys = [];
+	                for (var k in json.markers) {
+	                    keys.push(k);
+	                }var buses = json.markers[keys[0]];
+	
+	                this.setState({
+	                    data: buses
+	                });
+	            }.bind(this)).catch(function (ex) {
+	                console.log('parsing failed', ex);
+	            });
 	        }
 	    }, {
 	        key: 'componentWillUpdate',
 	        value: function componentWillUpdate(nextProps, nextState) {
+	
+	            this.bounds = new google.maps.LatLngBounds();
+	
 	            if (!(this.state.data === nextState.data)) {
 	                for (var i = 0; i < nextState.data.length; i++) {
 	                    var bus = nextState.data[i];
@@ -56218,7 +56247,10 @@
 	                        icon: image,
 	                        optimized: false
 	                    });
+	
+	                    this.bounds.extend(new google.maps.LatLng(bus[0], bus[1]));
 	                }
+	                this.map.fitBounds(this.bounds);
 	            }
 	
 	            if (!(nextState.coords.lat === this.state.coords.lat && nextState.coords.lng === this.state.coords.lng)) {
@@ -56236,6 +56268,8 @@
 	                });
 	
 	                this.map.setCenter(new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng));
+	
+	                this.bounds.extend(new google.maps.LatLng(nextState.coords.lat, nextState.coords.lng));
 	            }
 	
 	            if (!(this.props.routes === nextProps.routes)) {

@@ -46,7 +46,7 @@ const App = React.createClass({
     return {
         lat: coords.lat,
         lng: coords.lng,
-        selectedRoute: '',
+        selectedRoute: route,
         routeOptions: [],
         setCurrentLocation: true
     };
