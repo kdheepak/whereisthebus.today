@@ -1,5 +1,6 @@
 import React from 'react';
 import {GoogleMapLoader, GoogleMap, Marker} from "react-google-maps";
+const Loading = require('react-loading-animation');
 
 import MyCurrentLocation from './MyCurrentLocation.jsx';
 import MyRoute from './MyRoute.jsx';
@@ -15,6 +16,7 @@ const image = new google.maps.MarkerImage(
     new google.maps.Size(32, 32)
 )
 
+
 class MyGoogleMap extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -26,12 +28,14 @@ class MyGoogleMap extends React.Component {
             coords: {
               lat: 39.7433,
               lng: -104.9891
-            }
+          },
+            loading: false
         };
 }
 
   render() {
-  return <div className="GMap" style={{width: '100%', height: '95vh'}}>
+        return <div className="GMap" style={{width: '100%', height: '95vh'}}>
+            <Loading isLoading={this.state.loading}></Loading>
             <div className='GMap-canvas' ref="mapCanvas" style={{width: '100%', height: '95vh'}}>
             </div>
         </div>
@@ -87,7 +91,6 @@ componentDidMount() {
           console.log('parsing failed', ex);
       })
 
-
 }
 
 componentWillUpdate(nextProps, nextState) {
@@ -136,6 +139,10 @@ componentWillUpdate(nextProps, nextState) {
     if( !(this.props.routes === nextProps.routes) ) {
         // selectedRoute has changed
 
+        this.setState({
+            loading: true
+        })
+
         fetch('/api/markers/'+nextProps.routes)
           .then(function(response) {
             // console.log(response.headers.get('Content-Type'))
@@ -156,7 +163,8 @@ componentWillUpdate(nextProps, nextState) {
                 var buses = json.markers[keys[0]]
 
                 this.setState({
-                    data: buses
+                    data: buses,
+                    loading: false
                 })
 
           }.bind(this)).catch(function(ex) {
