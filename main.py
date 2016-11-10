@@ -62,6 +62,11 @@ def get_real_time_data_request_response(header=False):
 from flask import Flask, render_template, request
 app = Flask(__name__)
 
+@app.route('/refresh')
+def refresh():
+    get_gtfs_data(force=True)
+    return 'Done'
+
 @app.route('/')
 def main():
     return render_template('index.html')
