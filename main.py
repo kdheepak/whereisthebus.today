@@ -69,8 +69,8 @@ def main():
 
 @app.route('/api')
 def get_locations():
-    lat = float(request.args.get('lat'))
-    lon = float(request.args.get('lon'))
+    lat = float(request.args.get('lat', 39.7392))
+    lon = float(request.args.get('lon', -104.9903))
     print(lat, lon)
 
     trip_headsign='Denver West'
@@ -107,13 +107,18 @@ def get_locations():
 
     dist = stop_df[['stop_lat', 'stop_lon']].values - stop_df[['user_lat', 'user_lon']].values
     stop_df['min_distance'] = dist[:, 0]*dist[:, 0] + dist[:, 1]*dist[:, 1]
-    closest_stop_id = stop_df.loc[[d['stop_id'] for d in list_dict], 'min_distance'].argmin()
+    try:
+        closest_stop_id = stop_df.loc[[d['stop_id'] for d in list_dict], 'min_distance'].argmin()
+    except:
+        closest_stop_id = ''
 
     for entity in list_entities:
         for stu in entity.trip_update.stop_time_update:
             if stu.stop_id == closest_stop_id:
                 print('closest estimated')
                 print(pd.Timestamp(stu.departure.time, unit='s', tz='UTC').tz_convert('America/Denver').strftime('%H:%M'))
+
+    console.log(list_dict)
 
     return json.dumps(list_dict)
 
