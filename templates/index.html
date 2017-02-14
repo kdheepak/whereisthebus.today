@@ -2,119 +2,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <style>
-
 html, body, #map {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
-
-.stations, .stations svg {
-  position: absolute;
-}
-
-.stations svg {
-  width: 60px;
-  height: 20px;
-  padding-right: 100px;
-  font: 10px sans-serif;
-}
-
-.stations circle {
-  fill: brown;
-  stroke: black;
-  stroke-width: 1.5px;
-}
-
 </style>
+
 <div id="map"></div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU&sensor=true" type="text/javascript"></script>
-<script src="/static/geolocation-marker.js"></script>
+
 <script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="{{ url_for('static', filename='map.js')  }}"></script>
 <script>
 
-// Create the Google Map…
-var map = new google.maps.Map(d3.select("#map").node(), {
-  zoom: 8,
-  center: new google.maps.LatLng(39.7392, -104.9903),
-});
-
-
-var options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0
-};
-
-function success(pos) {
-    map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-    map.setZoom(15);
-    var GeoMarker = new GeolocationMarker(map);
-
-    // Load the station data. When the data comes back, create an overlay.
-    d3.json("/api?lat=" + pos.coords.latitude + "&lon=" + pos.coords.longitude, function(error, data) {
-      if (error) throw error;
-
-      console.log(data)
-
-      var overlay = new google.maps.OverlayView();
-
-      // Add the container when the overlay is added to the map.
-      overlay.onAdd = function() {
-        var layer = d3.select(this.getPanes().overlayLayer).append("div")
-            .attr("class", "stations");
-
-        // Draw each marker as a separate SVG element.
-        // We could use a single SVG, but what size would it have?
-        overlay.draw = function() {
-          var projection = this.getProjection(),
-              padding = 10;
-
-          var marker = layer.selectAll("svg")
-                      .data(data)
-                      .each(transform)
-                      .enter().append("svg")
-                      .each(transform)
-                      .attr("class", "marker");
-
-          // Add a circle.
-          marker
-              .append("circle")
-              .attr("r", 4.5)
-              .attr("cx", padding)
-              .attr("cy", padding);
-
-          // Add a label.
-          marker.append("text")
-              .attr("x", padding + 7)
-              .attr("y", padding)
-              .attr("dy", ".31em")
-              .text(function(d) { return d.expected_departure; })
-              .style("background-color", "white")
-              .style("fill", "black");
-
-          function transform(d) {
-              console.log(d)
-            d = new google.maps.LatLng(d.stop_lat, d.stop_lon);
-            d = projection.fromLatLngToDivPixel(d);
-            return d3.select(this)
-                .style("left", (d.x - padding) + "px")
-                .style("top", (d.y - padding) + "px");
-          }
-        };
-      };
-
-      // Bind our overlay to the map…
-      overlay.setMap(map);
-    });
-
-};
-
-function error(err) {
-  console.warn('ERROR(' + err.code + '): ' + err.message);
-};
-
-navigator.geolocation.getCurrentPosition(success, error, options);
-
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHeZ1fjiNUfnqlurPslSwmnjquCd60wFU&sensor=true&callback=initMap" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='geolocation-marker.js') }}"></script>
