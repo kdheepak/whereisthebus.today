@@ -47,8 +47,8 @@
 
           // Add a label.
           marker.append("svg:text")
-                            .attr("x", padding + 10)
-                            .attr("y", padding)
+                            .attr("x", 0)
+                            .attr("y", 25)
                             .attr("dy", ".31em")
                             .attr("class","marker_text")
                             .text(function(d) {return d.value.title; });
