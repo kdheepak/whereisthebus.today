@@ -33,6 +33,11 @@ html, body, #map {
 
 .marker_text {
   fill: black;
+  text-shadow:
+    -2px -2px 0 #fff,
+     2px -2px 0 #fff,
+    -2px  2px 0 #fff,
+     2px  2px 0 #fff;
 }
 
 </style>
@@ -40,7 +45,7 @@ html, body, #map {
 <div id="map"></div>
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="{{ url_for('static', filename='map.js')  }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}"></script>
 <script>
 
 </script>
