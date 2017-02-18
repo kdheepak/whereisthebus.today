@@ -26,7 +26,7 @@ def get_gtfs_data():
     url = 'http://www.rtd-denver.com/GoogleFeeder/google_transit.zip'
     request = requests.get(url)
     z = zipfile.ZipFile(BytesIO(request.content))
-    z.extractall()
+    z.extractall('google_feeder')
     return z
 
 def get_real_time_data_request_response(header=False):
