@@ -5,8 +5,10 @@ import requests
 import json
 import os
 import pandas as pd
+from io import BytesIO
+import zipfile
 
-from flask import Flask, render_template  # , request
+from flask import Flask, render_template, request
 app = Flask(__name__)
 
 COLOR_MAP = {"Union Station": '1b9e77',
@@ -14,8 +16,18 @@ COLOR_MAP = {"Union Station": '1b9e77',
              "Denver West": '7570b3'}
 
 
-trips_df = pd.read_csv('./google_feeder/trips.txt', index_col=2)
+try:
+    trips_df = pd.read_csv('./google_feeder/trips.txt', index_col=2)
+except Exception as e:
+    trips_df = None
+    print(e)
 
+def get_gtfs_data():
+    url = 'http://www.rtd-denver.com/GoogleFeeder/google_transit.zip'
+    request = requests.get(url)
+    z = zipfile.ZipFile(BytesIO(request.content))
+    z.extractall()
+    return z
 
 def get_real_time_data_request_response(header=False):
     if header:
@@ -28,6 +40,11 @@ def get_real_time_data_request_response(header=False):
         else:
             return None
 
+@app.route('/refresh')
+def refresh():
+    get_gtfs_data()
+    return json.dumps({'refresh': True})
+
 
 @app.route('/')
 def main():
@@ -38,6 +55,7 @@ def main():
 def get_locations():
     # lat = float(request.args.get('lat', 39.7392))
     # lon = float(request.args.get('lon', -104.9903))
+    route_id = request.args.get('route_id', '20')
 
     # tu_feed = gtfs_realtime_pb2.FeedMessage()
     # response = requests.get('http://www.rtd-denver.com/google_sync/TripUpdate.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
@@ -46,14 +64,18 @@ def get_locations():
     response = requests.get('http://www.rtd-denver.com/google_sync/VehiclePosition.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
     vp_feed.ParseFromString(response.content)
 
-    vp_list = [vp for vp in vp_feed.entity if vp.vehicle.trip.route_id == '20']
+    vp_list = [vp for vp in vp_feed.entity if vp.vehicle.trip.route_id == route_id]
 
     data = list()
     for vp in vp_list:
-        title = trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']
+        if trips_df is not None:
+            title = trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']
+        else:
+            title = ''
         try:
             color = COLOR_MAP[title]
-        except:
+        except Exception as e:
+            print(e)
             color = 'FFFFFF'
         data.append({
             'color': color,
