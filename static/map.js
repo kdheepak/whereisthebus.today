@@ -3,107 +3,113 @@
 ( function (exports) {
 
     var map = null;
-    var data = null;
+    var bounds;
+    var overlay;
+    var data = [];
     var markers = [];
 
     function initMap() {
-        map = new google.maps.Map(d3.select("#map").node(), {
-          zoom: 8,
-          center: new google.maps.LatLng(39.7392, -104.9903),
-        });
-
-        function updateMarkers() {
-
-            for (i=0; i < markers.length; i++) {
-                var marker = markers[i];
-                marker.setMap(null);
-                marker = null;
+            map = new google.maps.Map(d3.select("#map").node(), {
+              zoom: 8,
+              center: new google.maps.LatLng(39.7392, -104.9903),
+            });
+            bounds   = new google.maps.LatLngBounds();
+            overlay  = new google.maps.OverlayView();
+            overlay.onAdd = function() {
+              layer = d3.select(this.getPanes().overlayMouseTarget).append("div").attr("class", "stations");
             }
 
-            for (i=0; i < data.length; i++) {
-                var posLatLng = new google.maps.LatLng(data[i].lat,data[i].lon);
-                var pinColor = data[i].color;
-                var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-                    new google.maps.Size(21, 34),
-                    new google.maps.Point(0,0),
-                    new google.maps.Point(10, 34));
-                var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-                    new google.maps.Size(40, 37),
-                    new google.maps.Point(0, 0),
-                    new google.maps.Point(12, 35));
-
-                var marker = new google.maps.Marker({
-                    title: data[i].title,
-                    position: posLatLng,
-                    icon: pinImage,
-                    shadow: pinShadow
-                });
-
-                markers.push(marker)
-
-                google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                    var infowindow = new google.maps.InfoWindow({
-                        content: "<span>" + data[i].title + "</span>"
-                    });
-                    console.log('Adding listener')
-                    return function() {
-                        console.log('Opening infowindow')
-                        infowindow.open(map, markers[i]);
-                    }
-                    })(marker, i));
-
-                marker.setMap(map)
-
-
-            }
+        updateOverlay()
 
         }
 
         function updateData(d) {
-            console.log(d)
-            data = d
+            sourcedata = d
         }
+
+        function updateOverlay() {
+
+        overlay.draw = function() {
+          var projection = this.getProjection(), padding = 10;
+          var marker = layer.selectAll("svg").data(d3.entries(data))
+                            .each(transform)
+                            .enter().append("svg:svg")
+                            .each(transform)
+                            .attr("class", "marker");
+
+          // Add a circle.
+          marker.append("svg:circle")
+                            .attr("r", 7)
+                            .attr("cx", padding)
+                            .attr("cy", padding)
+                            .style('fill', function(d) {return d.value.color; })
+                            .on("click",expandNode);
+
+          // Add a label.
+          marker.append("svg:text")
+                            .attr("x", padding + 10)
+                            .attr("y", padding)
+                            .attr("dy", ".31em")
+                            .attr("class","marker_text")
+                            .text(function(d) {return d.value.title; });
+
+          function transform(d) {
+            d = new google.maps.LatLng(d.value.lat, d.value.lon);
+            d = projection.fromLatLngToDivPixel(d);
+            return d3.select(this).transition().duration(100).style("left", (d.x - padding) + "px").style("top", (d.y - padding) + "px");
+          }
+          // provides node animation for mouseover
+          function expandNode() {
+              if ( d3.select(this).attr('r') >= 9 ) {
+                    d3.select(this).transition()
+                            .duration(100)
+                            .attr("r", 7)
+              }
+              else {
+                    d3.select(this).transition()
+                            .duration(100)
+                            .attr("r", 9)
+              }
+          };
+
+
+          // provides node animation for mouseout
+          function contractNode(){
+            d3.select(this).transition()
+                            .duration(100)
+                            .attr("r",4.5)
+          };
+        };
+
+        overlay.setMap(map);
+      }
 
         // Load the station data. When the data comes back, create an overlay.
         setInterval( function() {
-                d3.json("/api", function(error, data) {
+                d3.json("/api", function(error, d) {
                     if (error) throw error;
-                            console.log(data)
-                            updateData(data)
-                            updateMarkers()
-
+                            console.log(d);
+                            data = d
+                            overlay.draw()
                 });
-            }, 5000);
-
-        exports.updateData
-        exports.updateMarkers
+            }, 1000);
 
         var options = {
           enableHighAccuracy: true,
           timeout: 5000,
           maximumAge: 0
         };
-
         function success(pos) {
-
             map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
             map.setZoom(15);
             var GeoMarker = new GeolocationMarker(map);
-
         }
-
         function error(err) {
           console.warn('ERROR(' + err.code + '): ' + err.message);
         };
-
         navigator.geolocation.getCurrentPosition(success, error, options);
 
-
-    }
-
-
     exports.initMap = initMap
-
 
 }(window) );
 

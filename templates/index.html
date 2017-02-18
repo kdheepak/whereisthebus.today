@@ -8,6 +8,33 @@ html, body, #map {
   margin: 0;
   padding: 0;
 }
+
+.stations, .stations svg {
+  position: absolute;
+}
+
+.stations svg {
+  width: 80px;
+  height: 20px;
+  padding-right: 100px;
+  font: 12px sans-serif; }
+
+.stations circle {
+  fill: red;
+  stroke: black;
+  stroke-width: 1px;
+  -webkit-animation-name: redPulse;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite; }
+
+.stations circle:hover {
+  fill: blue;
+  cursor: pointer; }
+
+.marker_text {
+  fill: black;
+}
+
 </style>
 
 <div id="map"></div>
