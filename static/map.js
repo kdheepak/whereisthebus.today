@@ -7,6 +7,7 @@
     var overlay;
     var data = [];
     var markers = [];
+    var ANIMATION = 0;
 
     function initMap() {
             map = new google.maps.Map(d3.select("#map").node(), {
@@ -56,7 +57,7 @@
           function transform(d) {
             d = new google.maps.LatLng(d.value.lat, d.value.lon);
             d = projection.fromLatLngToDivPixel(d);
-            return d3.select(this).transition().duration(100).style("left", (d.x - padding) + "px").style("top", (d.y - padding) + "px");
+            return d3.select(this).transition().duration(ANIMATION).style("left", (d.x - padding) + "px").style("top", (d.y - padding) + "px");
           }
           // provides node animation for mouseover
           function expandNode() {
@@ -90,7 +91,9 @@
                     if (error) throw error;
                             console.log(d);
                             data = d
+                            ANIMATION = 100
                             overlay.draw()
+                            ANIMATION = 0
                 });
             }, 1000);
 
