@@ -32,7 +32,10 @@
 
         overlay.draw = function() {
           var projection = this.getProjection(), padding = 10;
-          var marker = layer.selectAll("svg").data(d3.entries(data))
+          var selection = layer.selectAll("svg").data(d3.entries(data));
+          selection.exit().remove()
+
+          var marker = selection
                             .each(transform)
                             .enter().append("svg:svg")
                             .each(transform)
