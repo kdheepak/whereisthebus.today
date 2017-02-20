@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+
+
+<ul>
+
+{% for bus in bus_list %}
+<li><a href="https://whereisthebus.today/?route={{bus}}">Route : {{bus}}</a></li>
+{% endfor %}
+
+</ul>
+

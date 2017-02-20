@@ -46,6 +46,15 @@ def refresh():
     return json.dumps({'refresh': True})
 
 
+@app.route('/list')
+def list_buses():
+    vp_feed = gtfs_realtime_pb2.FeedMessage()
+    response = requests.get('http://www.rtd-denver.com/google_sync/VehiclePosition.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
+    vp_feed.ParseFromString(response.content)
+    data = sorted(list(set(vp.vehicle.trip.route_id for vp in vp_feed.entity)))
+    return render_template('list.html', bus_list=data)
+
+
 @app.route('/')
 def main():
     route_id = request.args.get('route', '20')
