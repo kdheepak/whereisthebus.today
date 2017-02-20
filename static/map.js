@@ -32,8 +32,17 @@
 
         overlay.draw = function() {
           var projection = this.getProjection(), padding = 10;
-          var selection = layer.selectAll("svg").data(d3.entries(data));
+          var selection = layer.selectAll("svg").data(data, function(d, i) {
+              return d.trip_id
+          });
+
           selection.exit().remove()
+
+          selection.select('text')
+                    .text(function(d) {return d.title; });
+
+          selection.select('circle')
+                    .style('fill', function(d) {return d.color; })
 
           var marker = selection
                             .each(transform)
@@ -46,7 +55,7 @@
                             .attr("r", 7)
                             .attr("cx", padding)
                             .attr("cy", padding)
-                            .style('fill', function(d) {return d.value.color; })
+                            .style('fill', function(d) {return d.color; })
                             .on("click",expandNode);
 
           // Add a label.
@@ -55,10 +64,10 @@
                             .attr("y", 25)
                             .attr("dy", ".31em")
                             .attr("class","marker_text")
-                            .text(function(d) {return d.value.title; });
+                            .text(function(d) {return d.title; });
 
           function transform(d) {
-            d = new google.maps.LatLng(d.value.lat, d.value.lon);
+            d = new google.maps.LatLng(d.lat, d.lon);
             d = projection.fromLatLngToDivPixel(d);
             return d3.select(this).transition().duration(ANIMATION).style("left", (d.x - padding) + "px").style("top", (d.y - padding) + "px");
           }
@@ -92,13 +101,12 @@
         setInterval( function() {
                 d3.json("/api", function(error, d) {
                     if (error) throw error;
-                            console.log(d);
                             data = d
                             ANIMATION = 100
                             overlay.draw()
                             ANIMATION = 0
                 });
-            }, 1000);
+            }, 250);
 
         var options = {
           enableHighAccuracy: true,
