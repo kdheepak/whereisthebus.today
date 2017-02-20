@@ -1,5 +1,7 @@
 // Create the Google Map…
 
+var route_id = 20;
+
 ( function (exports) {
 
     var map = null;
@@ -99,14 +101,14 @@
 
         // Load the station data. When the data comes back, create an overlay.
         setInterval( function() {
-                d3.json("/api", function(error, d) {
+                d3.json("/api?route_id=" + route_id, function(error, d) {
                     if (error) throw error;
                             data = d
                             ANIMATION = 100
                             overlay.draw()
                             ANIMATION = 0
                 });
-            }, 250);
+            }, 500);
 
         var options = {
           enableHighAccuracy: true,

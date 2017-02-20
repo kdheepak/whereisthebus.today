@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import matplotlib.cm as cm
+from matplotlib.colors import rgb2hex
 from google.transit import gtfs_realtime_pb2
 import requests
 import json
@@ -11,16 +13,12 @@ import zipfile
 from flask import Flask, render_template, request
 app = Flask(__name__)
 
-COLOR_MAP = {"Union Station": '1b9e77',
-             "Anschutz Medical Campus": 'd95f02',
-             "Denver West": '7570b3'}
-
-
 try:
     trips_df = pd.read_csv('./google_feeder/trips.txt', index_col=2)
 except Exception as e:
     trips_df = None
     print(e)
+
 
 def get_gtfs_data():
     url = 'http://www.rtd-denver.com/GoogleFeeder/google_transit.zip'
@@ -28,6 +26,7 @@ def get_gtfs_data():
     z = zipfile.ZipFile(BytesIO(request.content))
     z.extractall('google_feeder')
     return z
+
 
 def get_real_time_data_request_response(header=False):
     if header:
@@ -39,6 +38,7 @@ def get_real_time_data_request_response(header=False):
             return(r.content)
         else:
             return None
+
 
 @app.route('/refresh')
 def refresh():
@@ -65,6 +65,17 @@ def get_locations():
     vp_feed.ParseFromString(response.content)
 
     vp_list = [vp for vp in vp_feed.entity if vp.vehicle.trip.route_id == route_id]
+
+    if trips_df is not None:
+        COLOR_MAP = dict()
+        titles = set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)
+        print(titles)
+        for i, t in enumerate(titles):
+            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / ( len(titles) - 1 ) )[0:-1])
+    else:
+        COLOR_MAP = None
+
+    print(COLOR_MAP)
 
     data = list()
     for vp in vp_list:
@@ -95,4 +106,4 @@ def get_locations():
 
 if __name__ == '__main__':
 
-    app.run()
+    app.run(debug=True)
