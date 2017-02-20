@@ -28,3 +28,4 @@ requests == 2.10.0
 SQLAlchemy == 1.0.14
 WTForms == 2.1
 protobuf == 3.0.0b3
+matplotlib
