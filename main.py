@@ -78,7 +78,7 @@ def get_locations():
 
     if trips_df is not None:
         COLOR_MAP = dict()
-        titles = set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)
+        titles = sorted(list(set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)))
         for i, t in enumerate(titles):
             COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles) - 1))[0:-1])
     else:
@@ -113,4 +113,4 @@ def get_locations():
 
 if __name__ == '__main__':
 
-    app.run(debug=True)
+    app.run()
