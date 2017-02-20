@@ -1,7 +1,5 @@
 // Create the Google Map…
 
-var route_id = 20;
-
 ( function (exports) {
 
     var map = null;

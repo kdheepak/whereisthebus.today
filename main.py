@@ -48,7 +48,8 @@ def refresh():
 
 @app.route('/')
 def main():
-    return render_template('index.html')
+    route_id = request.args.get('route', '20')
+    return render_template('index.html', route_id=route_id)
 
 
 @app.route('/api')
@@ -69,13 +70,10 @@ def get_locations():
     if trips_df is not None:
         COLOR_MAP = dict()
         titles = set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)
-        print(titles)
         for i, t in enumerate(titles):
-            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / ( len(titles) - 1 ) )[0:-1])
+            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles) - 1))[0:-1])
     else:
         COLOR_MAP = None
-
-    print(COLOR_MAP)
 
     data = list()
     for vp in vp_list:
