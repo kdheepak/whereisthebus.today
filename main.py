@@ -65,7 +65,11 @@ def main():
 def get_locations():
     # lat = float(request.args.get('lat', 39.7392))
     # lon = float(request.args.get('lon', -104.9903))
-    route_id = request.args.get('route_id', '20')
+    try:
+        route_id = request.args.get('route_id', '20')
+    except Exception as e:
+        print(e)
+        route_id = '20'
 
     # tu_feed = gtfs_realtime_pb2.FeedMessage()
     # response = requests.get('http://www.rtd-denver.com/google_sync/TripUpdate.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
