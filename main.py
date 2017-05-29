@@ -80,7 +80,7 @@ def get_locations():
         COLOR_MAP = dict()
         titles = sorted(list(set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)))
         for i, t in enumerate(titles):
-            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles) - 1))[0:-1])
+            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles)))[0:-1])
     else:
         COLOR_MAP = None
 
@@ -110,6 +110,8 @@ def get_locations():
 
     return json.dumps(data)
 
+
+get_gtfs_data()
 
 if __name__ == '__main__':
 
