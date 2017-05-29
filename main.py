@@ -66,51 +66,58 @@ def get_locations():
     # lat = float(request.args.get('lat', 39.7392))
     # lon = float(request.args.get('lon', -104.9903))
     try:
-        route_id = request.args.get('route_id', '20')
-    except Exception as e:
-        print(e)
-        route_id = '20'
-
-    # tu_feed = gtfs_realtime_pb2.FeedMessage()
-    # response = requests.get('http://www.rtd-denver.com/google_sync/TripUpdate.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
-    # tu_feed.ParseFromString(response.content)
-    vp_feed = gtfs_realtime_pb2.FeedMessage()
-    response = requests.get('http://www.rtd-denver.com/google_sync/VehiclePosition.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
-    vp_feed.ParseFromString(response.content)
-
-    vp_list = [vp for vp in vp_feed.entity if vp.vehicle.trip.route_id == route_id]
-
-    if trips_df is not None:
-        COLOR_MAP = dict()
-        titles = sorted(list(set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)))
-        for i, t in enumerate(titles):
-            COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles)))[0:-1])
-    else:
-        COLOR_MAP = None
-
-    data = list()
-    for vp in vp_list:
-        if trips_df is not None:
-            title = trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']
-        else:
-            title = ''
         try:
-            color = COLOR_MAP[title]
+            route_id = request.args.get('route_id', '20')
         except Exception as e:
             print(e)
-            color = 'FFFFFF'
-        data.append({
-            'color': color,
-            'lat': vp.vehicle.position.latitude,
-            'lon': vp.vehicle.position.longitude,
-            'title': title,
-            'bearing': vp.vehicle.position.bearing,
-            'current_status': vp.vehicle.current_status,
-            'direction_id': vp.vehicle.trip.direction_id,
-            'route_id': vp.vehicle.trip.route_id,
-            'trip_id': vp.vehicle.trip.trip_id,
-            'schedule_relationship': vp.vehicle.trip.schedule_relationship,
-            'timestamp': vp.vehicle.timestamp})
+            route_id = '20'
+
+        # tu_feed = gtfs_realtime_pb2.FeedMessage()
+        # response = requests.get('http://www.rtd-denver.com/google_sync/TripUpdate.pb', auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
+        # tu_feed.ParseFromString(response.content)
+        vp_feed = gtfs_realtime_pb2.FeedMessage()
+        response = requests.get('http://www.rtd-denver.com/google_sync/VehiclePosition.pb',
+                                auth=(os.getenv('RTD_USERNAME'), os.getenv('RTD_PASSWORD')))
+        vp_feed.ParseFromString(response.content)
+
+        vp_list = [vp for vp in vp_feed.entity if vp.vehicle.trip.route_id == route_id]
+
+        if trips_df is not None:
+            COLOR_MAP = dict()
+            titles = sorted(list(set(str(trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']) for vp in vp_list)))
+            for i, t in enumerate(titles):
+                COLOR_MAP[t] = rgb2hex(cm.viridis(i * 1.0 / (len(titles)))[0:-1])
+        else:
+            COLOR_MAP = None
+
+        data = list()
+        for vp in vp_list:
+            if trips_df is not None:
+                title = trips_df.loc[int(vp.vehicle.trip.trip_id), 'trip_headsign']
+            else:
+                title = ''
+            try:
+                color = COLOR_MAP[title]
+            except Exception as e:
+                print(e)
+                color = 'FFFFFF'
+            data.append({
+                'color': color,
+                'lat': vp.vehicle.position.latitude,
+                'lon': vp.vehicle.position.longitude,
+                'title': title,
+                'bearing': vp.vehicle.position.bearing,
+                'current_status': vp.vehicle.current_status,
+                'direction_id': vp.vehicle.trip.direction_id,
+                'route_id': vp.vehicle.trip.route_id,
+                'trip_id': vp.vehicle.trip.trip_id,
+                'schedule_relationship': vp.vehicle.trip.schedule_relationship,
+                'timestamp': vp.vehicle.timestamp})
+
+    except Exception as e:
+        print(e)
+        requests.get('http://whereisthebus.today/refresh')
+        data = json.loads(get_locations())
 
     return json.dumps(data)
 
