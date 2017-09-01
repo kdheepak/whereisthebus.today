@@ -14,7 +14,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 try:
-    trips_df = pd.read_csv('./google_feeder/trips.txt', index_col=2)
+    trips_df = pd.read_csv('./google_feeder/trips.txt', index_col='trip_id')
 except Exception as e:
     trips_df = None
     print(e)
